@@ -10,7 +10,7 @@ openjdk17="/usr/bin/jdk/jdk-17.0.6/bin/java"
 openjdk19="/usr/bin/jdk/jdk-19.0.2/bin/java"
 openjdk21="/usr/bin/jdk/jdk-21.0.2/bin/java"
 
-maxmem=$((SERVER_MEMORY - 2048))"M"
+maxmem=$((SERVER_MEMORY - 1024))"M"
 minmem=$maxmem
 #maxmem=15G
 #minmem=15G
