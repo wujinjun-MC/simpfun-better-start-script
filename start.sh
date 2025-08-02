@@ -34,8 +34,8 @@ tmux=~/bin/tmux
 
 # 获取开始启动的时间戳
 start_timestamp=$(date +%s)
-# 指定关服标记文件，用于判断是否停止服务器
-fileCheckIfShutdownFromConsole=~/shutdown-mc-server
+# 指定关服标志文件，用于判断是否停止服务器
+export fileCheckIfShutdownFromConsole=~/shutdown-mc-server
 # 添加本地bin目录到路径
 export PATH=$PATH:$HOME/bin
 # 显示环境变量
@@ -43,7 +43,7 @@ export PATH=$PATH:$HOME/bin
 # 显示系统信息
 # uname -a
 
-# 删除关服标记文件，防止错误
+# 删除关服标志文件，防止错误
 rm -f "$fileCheckIfShutdownFromConsole"
 
 if [ "$useTmate"x = "1"x ]
