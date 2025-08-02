@@ -12,9 +12,13 @@ exit_actions()
 	exit $1
 }
 
+# 服务器JVM的最大(-Xmx)和预占用(-Xms)内存，建议最大设置为容器限制-1500，预占用内存设置为最大的一半
+export maxmem=$((${SERVER_MEMORY} - 1500))
+export minmem=$((${maxmem} / 2))
+
 # 是否使用Tmate
 # 设置为1使用Tmate，在控制台输出访问ssh命令和web链接，用于访问容器Shell和MC服务器控制台Shell
-# 设置为0使用handy-sshd，需要一个独立端口用于sshd，MC服务器在tmux中，登录ssh后执行 "tmux attach" 进入控制台
+# 设置为0使用Handy-sshd，需要一个独立端口用于sshd，MC服务器在tmux中，登录ssh后执行 "tmux attach" 进入控制台
 useTmate=0
 
 # Tmate模式: 创建Shell重试次数
