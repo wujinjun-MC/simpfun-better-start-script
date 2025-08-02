@@ -4,11 +4,11 @@
 server_jar="server-release.jar"
 
 from_pid=$1
-openjdk8="/usr/bin/jdk/jdk1.8.0_361/bin/java"
-openjdk11="/usr/bin/jdk/jdk-11.0.18/bin/java"
-openjdk17="/usr/bin/jdk/jdk-17.0.6/bin/java"
-openjdk19="/usr/bin/jdk/jdk-19.0.2/bin/java"
-openjdk21="/usr/bin/jdk/jdk-21.0.2/bin/java"
+# openjdk8="/usr/bin/jdk/jdk1.8.0_361/bin/java"
+# openjdk11="/usr/bin/jdk/jdk-11.0.18/bin/java"
+# openjdk17="/usr/bin/jdk/jdk-17.0.6/bin/java"
+# openjdk19="/usr/bin/jdk/jdk-19.0.2/bin/java"
+# openjdk21="/usr/bin/jdk/jdk-21.0.2/bin/java"
 
 maxmem=$((SERVER_MEMORY - 1024))"M"
 minmem=$maxmem
