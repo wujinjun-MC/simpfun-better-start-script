@@ -109,11 +109,11 @@ then
 		echo
 	fi
 
-	echo "[Tmate]成功启动容器和服务器Shell，可以使用控制台显示的信息连接到它们。在简幻欢控制台发送\"help\"查看命令帮助"
+	echo "[Tmate]成功启动容器和服务器Shell，可以使用控制台显示的信息连接到它们"
 	echo
-	# echo "Don't forget to add new seed:107038380838084"
 	trap exit_actions INT
 	# echo "[$(date +%H:%M:%S)] [Server thread/INFO]: Done (${done_duration}.00s)! For help, type \"help\""
+	echo "正在监听 latest.log 判断服务器何时启动成功"
 	tail -F ~/logs/latest.log | while IFS= read -r line
 	do
 		if [[ "$line" == *"For help, type \"help\""* ]]
@@ -152,11 +152,12 @@ then
 		fi
 	done
 else
-	echo "[Tmux]正在启动服务器..." 
-	"$tmux" new-session -ds mcserver_console 'TERM=xterm-256color bash ~/start-part-mcserver.sh'" $$"
 	echo "[Tmux]正在启动Handy-sshd"
 	"$tmux" new-session -ds sshd ~/bin/handy-sshd -p "$sshd_port" -u "$ssh_username":"$ssh_password"
 	echo "[Tmux]成功启用Handy-sshd, 端口为 $sshd_port"
+	echo "[Tmux]正在启动服务器..." 
+	"$tmux" new-session -ds mcserver_console 'TERM=xterm-256color bash ~/start-part-mcserver.sh'" $$"
+	echo "[Tmux]已启动服务器, 端口为 $SERVER_PORT"
 	echo "正在监听 latest.log 判断服务器何时启动成功"
 	trap exit_actions INT
 	tail -F ~/logs/latest.log | while IFS= read -r line
