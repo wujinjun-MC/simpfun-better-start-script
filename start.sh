@@ -12,13 +12,13 @@ exit_actions()
 	exit $1
 }
 
-# 服务器JVM的最大(-Xmx)和预占用(-Xms)内存，建议最大设置为容器限制-1500，预占用内存设置为最大的一半
+# 服务器JVM的最大(-Xmx)和预占用(-Xms)内存, 建议最大设置为容器限制-1500, 预占用内存设置为最大的一半
 export maxmem=$((${SERVER_MEMORY} - 1500))
 export minmem=$((${maxmem} / 2))
 
 # 是否使用Tmate
-# 设置为1使用Tmate，在控制台输出访问ssh命令和web链接，用于访问容器Shell和MC服务器控制台Shell
-# 设置为0使用Handy-sshd，需要一个独立端口用于sshd，MC服务器在tmux中，登录ssh后执行 "tmux attach" 进入控制台
+# 设置为1使用Tmate, 在控制台输出访问ssh命令和web链接, 用于访问容器Shell和MC服务器控制台Shell
+# 设置为0使用Handy-sshd, 需要一个独立端口用于sshd, MC服务器在tmux中, 登录ssh后执行 "tmux attach" 进入控制台
 useTmate=0
 
 # Tmate模式: 创建Shell重试次数
@@ -26,9 +26,9 @@ retry=5
 
 # Handy-sshd使用的端口
 sshd_port=25495
-# 用户名(不要带":"，或使用反斜杠转义)
+# 用户名(不要带":"和"@", 或使用反斜杠转义)
 ssh_username=wujinjun
-# 密码(不要带":"，或使用反斜杠转义)
+# 密码(不要带":", 或使用反斜杠转义)
 ssh_password=mypassword
 
 # 指定tmate二进制文件的路径
@@ -38,7 +38,7 @@ tmux=~/bin/tmux
 
 # 获取开始启动的时间戳
 start_timestamp=$(date +%s)
-# 指定关服标志文件，用于判断是否停止服务器
+# 指定关服标志文件, 用于判断是否停止服务器
 export fileCheckIfShutdownFromConsole=~/shutdown-mc-server
 # 添加本地bin目录到路径
 export PATH=$PATH:$HOME/bin
@@ -47,7 +47,7 @@ export PATH=$PATH:$HOME/bin
 # 显示系统信息
 # uname -a
 
-# 删除关服标志文件，防止错误
+# 删除关服标志文件, 防止错误
 rm -f "$fileCheckIfShutdownFromConsole"
 
 if [ "$useTmate"x = "1"x ]
@@ -63,7 +63,7 @@ then
 	do
 		if [ "$numTmateTrials" -ge "$retry" ]
 		then
-			echo "[Tmate]启动容器Shell失败，已跳过"
+			echo "[Tmate]启动容器Shell失败, 已跳过"
 			fail1=1
 			break
 		fi
@@ -91,7 +91,7 @@ then
 	do
 		if [ "$numTmateTrials" -ge "$retry" ]
 		then
-			echo "[Tmate]启动服务器Shell失败，已跳过"
+			echo "[Tmate]启动服务器Shell失败, 已跳过"
 			fail2=1
 			break
 		fi
@@ -113,7 +113,7 @@ then
 		echo
 	fi
 
-	echo "[Tmate]成功启动容器和服务器Shell，可以使用控制台显示的信息连接到它们"
+	echo "[Tmate]成功启动容器和服务器Shell, 可以使用控制台显示的信息连接到它们"
 	echo
 	trap exit_actions INT
 	# echo "[$(date +%H:%M:%S)] [Server thread/INFO]: Done (${done_duration}.00s)! For help, type \"help\""
@@ -129,7 +129,7 @@ then
 			break
 		fi
 	done
-	echo "现在开始，可以在此控制台输入\"help\"获取帮助"
+	echo "现在开始, 可以在此控制台输入\"help\"获取帮助"
 	while true
 	do
 		read -p "> " REPLY
@@ -158,10 +158,11 @@ then
 else
 	echo "[Tmux]正在启动Handy-sshd"
 	"$tmux" new-session -ds sshd ~/bin/handy-sshd -p "$sshd_port" -u "$ssh_username":"$ssh_password"
-	echo "[Tmux]成功启用Handy-sshd, 端口为 $sshd_port"
-	echo "[Tmux]正在启动服务器..." 
+	echo -e "SSH端口为 $sshd_port 。使用以下ssh命令连接:\nssh -p $sshd_port $ssh_username@play.simpfun.cn\n连接后，使用以下命令进入MC服务器控制台:\ntmux attach -t mcserver_console"
+	echo -e "如需访问容器内部端口，使用以下格式的ssh命令:\nssh -L <本地端口>:127.0.0.1:<远程端口> -p $sshd_port $ssh_username@play.simpfun.cn\nssh -L 9999:127.0.0.1:9999 -p $sshd_port $ssh_username@play.simpfun.cn\n然后访问 localhost:<本地端口>"
+	echo "[Tmux]正在启动MC服务器..." 
 	"$tmux" new-session -ds mcserver_console 'TERM=xterm-256color bash ~/start-part-mcserver.sh'" $$"
-	echo "[Tmux]已启动服务器, 端口为 $SERVER_PORT"
+	echo "[Tmux]MC服务器状态: 正在启动, 端口为 $SERVER_PORT"
 	echo "正在监听 latest.log 判断服务器何时启动成功"
 	trap exit_actions INT
 	tail -F ~/logs/latest.log | while IFS= read -r line
@@ -175,7 +176,7 @@ else
 			break
 		fi
 	done
-	echo "现在开始，可以在此控制台输入\"help\"获取帮助"
+	echo "现在开始, 可以在此控制台输入\"help\"获取帮助"
 	while true
 	do
 		read -p "> " REPLY
