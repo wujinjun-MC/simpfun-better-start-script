@@ -42,7 +42,6 @@ tmate=~/bin/tmate
 # 指定tmux二进制文件的路径
 tmux=~/bin/tmux
 
-
 # 指定关服标志文件, 用于判断是否停止服务器
 export fileCheckIfShutdownFromConsole=~/shutdown-mc-server
 # 添加本地bin目录到路径
