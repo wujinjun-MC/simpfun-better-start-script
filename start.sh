@@ -14,6 +14,8 @@ exit_actions()
 # 获取开始启动的时间戳
 start_timestamp=$(date +%s)
 
+
+#--------配置区--------
 # 文件权限准备: 为二进制文件和脚本文件添加执行权限(+x)
 chmod -R +x ~/bin/
 chmod -R +x ~/start-part.mcserver.sh
@@ -51,6 +53,16 @@ export PATH=$PATH:$HOME/bin
 # 显示系统信息
 # uname -a
 
+# 关服时，是否清除垃圾，避免因超出磁盘空间而扣积分(默认关闭)
+	# 清除BlueMap地图缓存
+cleanBlueMap=0
+	# 清除DHSupport压缩区块缓存
+cleanDistantHorizonsSupport=0
+	# 清除paper重映射插件缓存
+cleanPaperRemappedPlugins=0
+
+
+#--------启动区--------
 # 删除关服标志文件, 防止错误
 rm -f "$fileCheckIfShutdownFromConsole"
 
@@ -206,4 +218,25 @@ else
 			echo "未知命令: ${REPLY} 。输入 \"help\" 查看帮助"
 		fi
 	done
+fi
+
+
+#--------后处理区--------
+# 清除BlueMap地图缓存
+if [ "$cleanBlueMap"x = "1"x ]
+then
+	echo "正在清除BlueMap地图缓存"
+	rm -rf ~/bluemap/web/maps
+fi
+# 清除DHSupport压缩区块缓存
+if [ "$cleanDistantHorizonsSupport"x = "1"x ]
+then
+	echo "正在清除DHSupport压缩区块缓存"
+	rm -f ~/plugins/DHSupport/data.sqlite
+fi
+# 清除paper重映射插件缓存
+if [ "$cleanPaperRemappedPlugins"x = "1"x ]
+then
+	echo "正在清除paper重映射插件缓存"
+	rm -rf ~/plugins/.paper-remapped
 fi
