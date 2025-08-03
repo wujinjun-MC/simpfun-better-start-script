@@ -11,6 +11,8 @@ exit_actions()
 	echo "Minecraft server stopped, exiting..."
 	exit $1
 }
+# 获取开始启动的时间戳
+start_timestamp=$(date +%s)
 
 # 文件权限准备: 为二进制文件和脚本文件添加执行权限(+x)
 chmod -R +x ~/bin/
@@ -40,8 +42,7 @@ tmate=~/bin/tmate
 # 指定tmux二进制文件的路径
 tmux=~/bin/tmux
 
-# 获取开始启动的时间戳
-start_timestamp=$(date +%s)
+
 # 指定关服标志文件, 用于判断是否停止服务器
 export fileCheckIfShutdownFromConsole=~/shutdown-mc-server
 # 添加本地bin目录到路径
