@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# 服务器核心文件路径
-server_jar="server-release.jar"
-
 from_pid=$1
 # 这些jdk默认在环境变量提供，如果没有，请修改为正确的路径
 # openjdk8="/usr/bin/jdk/jdk1.8.0_361/bin/java"
@@ -26,9 +23,6 @@ exit_actions()
 
 # jvm1(deprecated)
 # jvm="-server -Xms${minmem}M -Xmx${maxmem}M -Xnoclassgc -XX:+UseG1GC -XX:+UseStringDeduplication -XX:+PerfDisableSharedMem -XX:+ParallelRefProcEnabled -XX:+UnlockExperimentalVMOptions -XX:MaxInlineLevel=16 -XX:MaxGCPauseMillis=200 -XX:+UseCompressedOops -XX:+UseLargePages -XX:+ExplicitGCInvokesConcurrent -XX:FreqInlineSize=325 -XX:MaxInlineSize=35 -XX:InlineSmallCode=2000 -XX:MaxRecursiveInlineLevel=1 -XX:MaxTenuringThreshold=1 -XX:SurvivorRatio=32 -XX:-DontCompileHugeMethods -XX:-CompactStrings -Dusing.aikars.flags=https://mcflags.emc.gs -Daikars.new.flags=true"
-# jvm2(better) 详情: https://g.co/gemini/share/def3167e45bc
-jvm="-server -Xms${minmem}M -Xmx${maxmem}M -XX:+UseG1GC -XX:+ParallelRefProcEnabled -XX:MaxGCPauseMillis=200 -XX:+UnlockExperimentalVMOptions -XX:+DisableExplicitGC -XX:+AlwaysPreTouch -XX:G1NewSizePercent=30 -XX:G1MaxNewSizePercent=40 -XX:G1HeapRegionSize=8M -XX:G1ReservePercent=20 -XX:G1HeapWastePercent=5 -XX:G1MixedGCCountTarget=4 -XX:InitiatingHeapOccupancyPercent=15 -XX:G1MixedGCLiveThresholdPercent=90 -XX:G1RSetUpdatingPauseTimePercent=5 -XX:SurvivorRatio=32 -XX:+PerfDisableSharedMem -XX:MaxTenuringThreshold=1 -Dusing.aikars.flags=https://mcflags.emc.gs -Daikars.new.flags=true"
-
 
 while true
 do

@@ -5,12 +5,6 @@ if [ "$BASH_VERSION"x = ""x ]; then
   sleep 1
   exec bash "$0" "$@"
 fi
-exit_actions()
-{
-	echo
-	echo "Minecraft server stopped, exiting..."
-	exit $1
-}
 # 获取开始启动的时间戳
 start_timestamp=$(date +%s)
 
@@ -20,6 +14,10 @@ start_timestamp=$(date +%s)
 chmod -R +x ~/bin/
 chmod -R +x ~/start-part.mcserver.sh
 
+# 服务器核心文件路径
+export server_jar="server-release.jar"
+# JVM参数 优化版 详情: https://g.co/gemini/share/def3167e45bc
+export jvm="-server -Xms${minmem}M -Xmx${maxmem}M -XX:+UseG1GC -XX:+ParallelRefProcEnabled -XX:MaxGCPauseMillis=200 -XX:+UnlockExperimentalVMOptions -XX:+DisableExplicitGC -XX:+AlwaysPreTouch -XX:G1NewSizePercent=30 -XX:G1MaxNewSizePercent=40 -XX:G1HeapRegionSize=8M -XX:G1ReservePercent=20 -XX:G1HeapWastePercent=5 -XX:G1MixedGCCountTarget=4 -XX:InitiatingHeapOccupancyPercent=15 -XX:G1MixedGCLiveThresholdPercent=90 -XX:G1RSetUpdatingPauseTimePercent=5 -XX:SurvivorRatio=32 -XX:+PerfDisableSharedMem -XX:MaxTenuringThreshold=1 -Dusing.aikars.flags=https://mcflags.emc.gs -Daikars.new.flags=true"
 # 服务器JVM的最大(-Xmx)和预占用(-Xms)内存, 建议最大设置为容器限制-1500, 预占用内存设置为最大的一半
 export maxmem=$((${SERVER_MEMORY} - 1500))
 export minmem=$((${maxmem} / 2))
@@ -60,6 +58,31 @@ cleanBlueMap=0
 cleanDistantHorizonsSupport=0
 	# 清除paper重映射插件缓存
 cleanPaperRemappedPlugins=0
+# 脚本结束动作，收到SIGINT结束时执行清理
+exit_actions()
+{
+	echo
+	echo "Minecraft server stopped, exiting..."
+	# 清除BlueMap地图缓存
+	if [ "$cleanBlueMap"x = "1"x ]
+	then
+		echo "正在清除BlueMap地图缓存"
+		rm -rf ~/bluemap/web/maps
+	fi
+	# 清除DHSupport压缩区块缓存
+	if [ "$cleanDistantHorizonsSupport"x = "1"x ]
+	then
+		echo "正在清除DHSupport压缩区块缓存"
+		rm -f ~/plugins/DHSupport/data.sqlite
+	fi
+	# 清除paper重映射插件缓存
+	if [ "$cleanPaperRemappedPlugins"x = "1"x ]
+	then
+		echo "正在清除paper重映射插件缓存"
+		rm -rf ~/plugins/.paper-remapped
+	fi
+	exit $1
+}
 
 
 #--------启动区--------
@@ -222,21 +245,4 @@ fi
 
 
 #--------后处理区--------
-# 清除BlueMap地图缓存
-if [ "$cleanBlueMap"x = "1"x ]
-then
-	echo "正在清除BlueMap地图缓存"
-	rm -rf ~/bluemap/web/maps
-fi
-# 清除DHSupport压缩区块缓存
-if [ "$cleanDistantHorizonsSupport"x = "1"x ]
-then
-	echo "正在清除DHSupport压缩区块缓存"
-	rm -f ~/plugins/DHSupport/data.sqlite
-fi
-# 清除paper重映射插件缓存
-if [ "$cleanPaperRemappedPlugins"x = "1"x ]
-then
-	echo "正在清除paper重映射插件缓存"
-	rm -rf ~/plugins/.paper-remapped
-fi
+exit_actions
