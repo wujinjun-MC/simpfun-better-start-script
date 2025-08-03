@@ -12,6 +12,10 @@ exit_actions()
 	exit $1
 }
 
+# 文件权限准备: 为二进制文件和脚本文件添加执行权限(+x)
+chmod -R +x ~/bin/
+chmod -R +x ~/start-part.mcserver.sh
+
 # 服务器JVM的最大(-Xmx)和预占用(-Xms)内存, 建议最大设置为容器限制-1500, 预占用内存设置为最大的一半
 export maxmem=$((${SERVER_MEMORY} - 1500))
 export minmem=$((${maxmem} / 2))

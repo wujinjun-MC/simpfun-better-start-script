@@ -1,0 +1,12 @@
+set afterends
+set autoindent
+set historylog
+set indicator
+set linenumbers
+set positionlog
+set quickblank
+set smarthome
+set softwrap
+set tabsize 4
+set tabstospaces
+set zero
