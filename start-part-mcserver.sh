@@ -45,13 +45,11 @@ do
 	then
 		read -e -p "等待时间(秒): " -i "10000000" sleep_time
 		sleep $sleep_time
-	fi
 	elif [ "$REPLY"x = "sleepstop"x ]
 	then
 		read -e -p "等待时间(秒): " -i "10000000" sleep_time
 		sleep $sleep_time
 		break
-	fi
 	elif [ "$REPLY"x = "pause"x ]
 	then
 		resume=0
@@ -62,7 +60,6 @@ do
 			if [ "$resume"x = "resume"x ]
 			then
 				break
-			fi
 			elif [ "$resume"x = "stop"x ]
 			then
 				flagStopServer=1
