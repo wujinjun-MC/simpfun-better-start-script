@@ -33,7 +33,7 @@ do
 	then
 		break
 	fi
-	echo "服务器已停止或崩溃，30秒后自动重启。输入 \"stop\" 立即停止；输入 \"jvm\" ，然后输入JVM参数以使用自定义JVM参数重启；输入 \"sleep\" ，然后输入时间(秒, 默认10000000)，则等待此时间后停止；输入其他内容则立即重启"
+	echo "服务器已停止或崩溃，30秒后自动重启。输入 \"stop\" 立即停止；输入 \"jvm\" ，然后输入JVM参数，以使用自定义JVM参数重启；输入\"sleep\"，然后输入时间(秒，默认10000000)，则等待此时间后重启；输入 \"sleepstop\" ，然后输入时间(秒, 默认10000000)，则等待此时间后停止；输入\"pause\"，则持续停止，然后输入\"resume\"启动或输入\"stop\"停止；输入其他内容则立即重启"
 	read -t 30 REPLY
 	if [ "$REPLY"x = "stop"x ]
 	then
@@ -45,6 +45,34 @@ do
 	then
 		read -e -p "等待时间(秒): " -i "10000000" sleep_time
 		sleep $sleep_time
+	fi
+	elif [ "$REPLY"x = "sleepstop"x ]
+	then
+		read -e -p "等待时间(秒): " -i "10000000" sleep_time
+		sleep $sleep_time
+		break
+	fi
+	elif [ "$REPLY"x = "pause"x ]
+	then
+		resume=0
+		flagStopServer=0
+		while true
+		do
+			read -e -p "输入resume启动/stop停止: " resume
+			if [ "$resume"x = "resume"x ]
+			then
+				break
+			fi
+			elif [ "$resume"x = "stop"x ]
+			then
+				flagStopServer=1
+				break
+			fi
+		done
+		if [ "$flagStopServer"x = "1"x ]
+		then
+			break
+		fi
 	fi
 done
 wait
