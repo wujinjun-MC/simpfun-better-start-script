@@ -137,7 +137,7 @@ then
 		echo "[Tmate]启动服务器Shell失败(可能是网络问题), 重试中..."
 		numTmateTrials=$(( numTmateTrials + 1 ))
 		sleep 1
-		"$tmate" -S "$tmate_sock_MCconsole" new-session -d bash start-part-mcserver.sh $$
+		"$tmate" -S "$tmate_sock_MCconsole" new-session -d 'TERM=xterm-256color bash ~/start-part-mcserver.sh'" $$"' ; bash -l'
 	done
 	if [ "$fail2"x = "0"x ]
 	then
@@ -196,12 +196,13 @@ then
 	done
 else
 	echo "[Tmux]正在启动Handy-sshd"
-	"$tmux" new-session -ds sshd ~/bin/handy-sshd -p "$sshd_port" -u "$ssh_username":"$ssh_password"
+	"$tmux" new-session -ds handy-sshd ~/bin/handy-sshd -p "$sshd_port" -u "$ssh_username":"$ssh_password"
 	echo -e "SSH端口为 $sshd_port 。使用以下ssh命令连接:\nssh -p $sshd_port $ssh_username@play.simpfun.cn\n连接后，使用以下命令进入MC服务器控制台:\ntmux attach -t mcserver_console"
 	echo -e "如需访问容器内部端口，使用以下格式的ssh命令:\nssh -L <本地端口>:127.0.0.1:<远程端口> -p $sshd_port $ssh_username@play.simpfun.cn\nssh -L 9999:127.0.0.1:9999 -p $sshd_port $ssh_username@play.simpfun.cn\n然后访问 localhost:<本地端口>"
 	echo "[Tmux]正在启动MC服务器..." 
-	"$tmux" new-session -ds mcserver_console 'TERM=xterm-256color bash ~/start-part-mcserver.sh'" $$"
+	"$tmux" new-session -ds mcserver_console 'TERM=xterm-256color bash ~/start-part-mcserver.sh'" $$"' ; bash -l'
 	echo "[Tmux]MC服务器状态: 正在启动, 端口为 $SERVER_PORT"
+	echo "Note: 如果希望退出服务器启动脚本后保持运行，请先关闭服务器，在关闭还未重启时使用Linux命令\"pgrep -a bash\"查看启动脚本的PID，然后\"kill -s 9 <PID>\""
 	echo "正在监听 latest.log 判断服务器何时启动成功"
 	trap exit_actions INT
 	tail -F ~/logs/latest.log | while IFS= read -r line
