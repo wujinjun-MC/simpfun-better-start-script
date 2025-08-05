@@ -2,8 +2,8 @@
 export PROMPT_COMMAND="history -a; history -n"
 export HISTSIZE=100000
 export HISTFILESIZE=1000000
-export HISTCONTROL=ignoreboth
-export HISTTIMEFORMAT="%F %T "
+export HISTCONTROL=ignoredups:ignorespace
+# export HISTTIMEFORMAT="%F %T " # 干扰HISTCONTROL功能
 
 export PATH=$PATH:$HOME/bin
 # export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$HOME/lib:$HOME/usr/lib
