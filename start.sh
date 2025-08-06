@@ -67,7 +67,7 @@ exit_actions()
 	if [ "$cleanBlueMap"x = "1"x ]
 	then
 		echo "正在清除BlueMap地图缓存"
-		rm -rf ~/bluemap/web/maps
+		rm -rf ~/bluemap/web/maps/*
 	fi
 	# 清除DHSupport压缩区块缓存
 	if [ "$cleanDistantHorizonsSupport"x = "1"x ]
@@ -79,7 +79,7 @@ exit_actions()
 	if [ "$cleanPaperRemappedPlugins"x = "1"x ]
 	then
 		echo "正在清除paper重映射插件缓存"
-		rm -rf ~/plugins/.paper-remapped
+		rm -rf ~/plugins/.paper-remapped/*
 	fi
 	exit $1
 }
