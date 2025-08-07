@@ -22,20 +22,28 @@ export minmem=$((${maxmem} / 2))
 # JVM参数 优化版 详情: https://g.co/gemini/share/def3167e45bc
 export jvm="-server -Xms${minmem}M -Xmx${maxmem}M -XX:+UseG1GC -XX:+ParallelRefProcEnabled -XX:MaxGCPauseMillis=200 -XX:+UnlockExperimentalVMOptions -XX:+DisableExplicitGC -XX:+AlwaysPreTouch -XX:G1NewSizePercent=30 -XX:G1MaxNewSizePercent=40 -XX:G1HeapRegionSize=8M -XX:G1ReservePercent=20 -XX:G1HeapWastePercent=5 -XX:G1MixedGCCountTarget=4 -XX:InitiatingHeapOccupancyPercent=15 -XX:G1MixedGCLiveThresholdPercent=90 -XX:G1RSetUpdatingPauseTimePercent=5 -XX:SurvivorRatio=32 -XX:+PerfDisableSharedMem -XX:MaxTenuringThreshold=1 -Dusing.aikars.flags=https://mcflags.emc.gs -Daikars.new.flags=true"
 
-# 是否使用Tmate
-# 设置为1使用Tmate, 在控制台输出访问ssh命令和web链接, 用于访问容器Shell和MC服务器控制台Shell
-# 设置为0使用Handy-sshd, 需要一个独立端口用于sshd, MC服务器在tmux中, 登录ssh后执行 "tmux attach" 进入控制台
-useTmate=0
+# SSH(远程终端)模式
+# 设置为0使用Tmate, 在控制台输出访问ssh命令和web链接, 用于访问容器Shell和MC服务器控制台Shell
+# 设置为1使用Handy-sshd, 需要一个独立端口用于sshd, MC控制台在tmux中, 登录ssh后执行 "tmux attach" 进入控制台
+sshmode=1
+# # SSH模式为1时，是否开启 用户名和密码登录
+# ssh_use_user_password=1
+# # SSH模式为1时，是否开启 密钥登录
+# ssh_use_key=1
 
 # Tmate模式: 创建Shell重试次数
 retry=5
 
-# Handy-sshd使用的端口
+# sshd使用的端口
 sshd_port=25495
-# 用户名(不要带":"和"@", 或使用反斜杠转义)
+
+# SSH认证信息。如果 {用户名和密码} 或 {密钥} 组成部分都为空白，则不使用对应认证方法
+# SSH用户名(不要带":"和"@", 或使用反斜杠转义)
 ssh_username=wujinjun
-# 密码(不要带":", 或使用反斜杠转义)
+# SSH密码(不要带":", 或使用反斜杠转义) 留空则无需密码即可登录(非常不安全!)
 ssh_password=mypassword
+# SSH密钥(authorized_keys)路径
+ssh_key_path=~/.ssh/authorized_keys
 
 # 指定tmate二进制文件的路径
 tmate=~/bin/tmate
@@ -89,7 +97,7 @@ exit_actions()
 # 删除关服标志文件, 防止错误
 rm -f "$fileCheckIfShutdownFromConsole"
 
-if [ "$useTmate"x = "1"x ]
+if [ "$sshmode"x = "0"x ]
 then
 	echo "[Tmate]正在启动容器Shell"
 	numTmateTrials=1 # 重试次数计数器
@@ -194,16 +202,85 @@ then
 			echo "未知命令: ${REPLY} 。输入 \"help\" 查看帮助"
 		fi
 	done
-else
-	echo "[Tmux]正在启动Handy-sshd"
-	"$tmux" new-session -ds handy-sshd ~/bin/handy-sshd -p "$sshd_port" -u "$ssh_username":"$ssh_password"
-	echo -e "SSH端口为 $sshd_port 。使用以下ssh命令连接:\nssh -p $sshd_port $ssh_username@play.simpfun.cn\n连接后，使用以下命令进入MC服务器控制台:\ntmux attach -t mcserver_console"
-	echo -e "如需访问容器内部端口，使用以下格式的ssh命令:\nssh -L <本地端口>:127.0.0.1:<远程端口> -p $sshd_port $ssh_username@play.simpfun.cn\nssh -L 9999:127.0.0.1:9999 -p $sshd_port $ssh_username@play.simpfun.cn\n然后访问 localhost:<本地端口>"
-	echo "[Tmux]正在启动MC服务器..." 
-	"$tmux" new-session -ds mcserver_console 'TERM=xterm-256color bash ~/start-part-mcserver.sh'" $$"' ; bash -l'
-	echo "[Tmux]MC服务器状态: 正在启动, 端口为 $SERVER_PORT"
-	echo "Note: 如果希望退出服务器启动脚本后保持运行，请先关闭服务器，在关闭还未重启时使用Linux命令\"pgrep -a bash\"查看启动脚本的PID，然后\"kill -s 9 <PID>\""
-	echo "正在监听 latest.log 判断服务器何时启动成功"
+elif [ "$sshmode"x = "1"x ]
+	echo "[Tmux] 正在启动Handy-sshd"
+	# 构建handy-sshd命令行参数，自动检测是否需要添加参数
+		# 1. 初始化一个参数数组
+	sshd_args=("~/bin/handy-sshd")
+	sshd_args+=("-p" "$sshd_port")
+		# 2. 判断是否添加 --user 参数
+	if [[ -n "$ssh_username" && -n "$ssh_password" ]]; then
+		args+=("--user" "$ssh_username:$ssh_password")
+	fi
+		# 3. 判断是否添加 --keys 参数
+	if [[ -n "$ssh_key_path" ]]; then
+		args+=("--keys" "$ssh_key_path")
+	fi
+		# 4. 构建最终在 tmux 中执行的命令
+		# 将参数数组中的元素拼接成一个字符串
+	handy_sshd_command="${args[@]}"
+	# echo "[Tmux] 执行命令: $handy_sshd_command" # 不安全
+	"$tmux" new-session -ds handy-sshd "$handy_sshd_command"
+	ssh_command="ssh -p $sshd_port"
+	if [[ -n "$ssh_username" ]]; then
+		ssh_command2="$ssh_username@play.simpfun.cn"
+	else
+		# 如果没有用户名，只显示主机地址
+		ssh_command2="play.simpfun.cn"
+	fi
+	echo "---"
+	echo "✅ SSH服务器已启动，监听端口: $sshd_port"
+	echo "➡️ 使用以下命令连接："
+	echo "$ssh_command $ssh_command2"
+	if [[ -n "$ssh_key_path" ]]; then
+		echo "💡 你已设置密钥连接，使用对应的密钥对将无需输入用户名和密码(如果有)"
+		echo "   命令示例: ssh -p $sshd_port -i /path/to/your/private_key play.simpfun.cn"
+	fi
+	echo "➡️ 连接后，使用以下命令进入控制台："
+	echo "tmux attach -t mcserver_console"
+	echo "---"
+
+	# --- SSH端口转发提示 ---
+	echo "---"
+	echo "🌐 端口转发 (Port Forwarding)"
+	echo "---"
+	echo "如需从本地访问容器内部端口，请使用 SSH 端口转发功能。"
+	echo "SSH 命令格式: \"$ssh_command -L <本地端口>:127.0.0.1:<远程端口> $ssh_command2\""
+	echo "示例: \"$ssh_command -L 9999:127.0.0.1:9999 $ssh_command2\""
+	echo "然后，您就可以通过访问 \"localhost:<本地端口>\" 来连接到容器内的服务。"
+	echo ""
+
+	# --- Tmux 会话启动提示 ---
+	echo "---"
+	echo "🚀 启动 Minecraft 服务器"
+	echo "---"
+	echo "▶️ [Tmux] 正在启动 Minecraft 服务器..."
+	"$tmux" new-session -ds mcserver_console 'TERM=xterm-256color bash ~/start-part-mcserver.sh $$ ; bash -l'
+	echo "✅ [Tmux] Minecraft 服务器已启动，运行在端口 $SERVER_PORT。"
+	echo "请使用命令 \"tmux attach -t mcserver_console\" 进入服务器控制台。"
+	echo ""
+
+	# --- 重要提示 ---
+	echo "---"
+	echo "Note: 如何保持服务器运行"
+	echo "---"
+	echo "如果你希望在退出脚本后服务器进程仍然运行，"
+	echo "请在MC控制台输入stop停止，在MC服务器重启前快速找到旧的启动脚本进程并结束它。使用以下步骤："
+	echo "1. 使用 \"pgrep -a bash\" 查找带有start-part-mcserver.sh的 bash进程 的 PID。"
+	echo "2. 使用 \"kill -s 9 <PID>\" 强制结束该进程。"
+	echo "这样可以防止新的启动脚本启动后与旧的脚本冲突。"
+	echo ""
+	echo "---"
+	echo "⏳ 日志监控"
+	echo "---"
+	echo "正在监听 \"latest.log\" 文件，判断服务器何时启动成功..."
+	# echo -e "SSH端口为 $sshd_port 。使用以下ssh命令连接:\nssh -p $sshd_port $ssh_username@play.simpfun.cn\n连接后，使用以下命令进入MC服务器控制台:\ntmux attach -t mcserver_console"
+	# echo -e "如需访问容器内部端口，使用以下格式的ssh命令:\nssh -L <本地端口>:127.0.0.1:<远程端口> -p $sshd_port $ssh_username@play.simpfun.cn\nssh -L 9999:127.0.0.1:9999 -p $sshd_port $ssh_username@play.simpfun.cn\n然后访问 localhost:<本地端口>"
+	# echo "[Tmux]正在启动MC服务器..." 
+	# "$tmux" new-session -ds mcserver_console 'TERM=xterm-256color bash ~/start-part-mcserver.sh'" $$"' ; bash -l'
+	# echo "[Tmux]MC服务器状态: 正在启动, 端口为 $SERVER_PORT"
+	# echo "Note: 如果希望退出服务器启动脚本后保持运行，请先关闭服务器，在关闭还未重启时使用Linux命令\"pgrep -a bash\"查看启动脚本的PID，然后\"kill -s 9 <PID>\""
+	# echo "正在监听 latest.log 判断服务器何时启动成功"
 	trap exit_actions INT
 	tail -F ~/logs/latest.log | while IFS= read -r line
 	do
