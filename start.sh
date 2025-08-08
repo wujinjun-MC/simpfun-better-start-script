@@ -211,15 +211,15 @@ then
 	sshd_args+=("-p" "$sshd_port")
 		# 2. 判断是否添加 --user 参数
 	if [[ -n "$ssh_username" && -n "$ssh_password" ]]; then
-		args+=("--user" "$ssh_username:$ssh_password")
+		sshd_args+=("--user" "$ssh_username:$ssh_password")
 	fi
 		# 3. 判断是否添加 --keys 参数
 	if [[ -n "$ssh_key_path" ]]; then
-		args+=("--keys" "$ssh_key_path")
+		sshd_args+=("--keys" "$ssh_key_path")
 	fi
 		# 4. 构建最终在 tmux 中执行的命令
 		# 将参数数组中的元素拼接成一个字符串
-	handy_sshd_command="${args[@]}"
+	handy_sshd_command="${sshd_args[@]}"
 	# echo "[Tmux] 执行命令: $handy_sshd_command" # 不安全
 	"$tmux" new-session -ds handy-sshd "$handy_sshd_command"
 	ssh_command="ssh -p $sshd_port"
@@ -300,10 +300,11 @@ then
 		read -p "> " REPLY
 		if [ "$REPLY"x = "stop"x ]
 		then
+			echo 正在停止服务器
+			sleep 1
 			"$tmux" send-keys -t mcserver_console "stop"
 			"$tmux" send-keys -t mcserver_console Enter
 			touch "$fileCheckIfShutdownFromConsole"
-			echo 正在停止服务器
 			"$tmux" attach -t mcserver_console
 			break
 		elif [ "$REPLY"x = "attach"x ]
@@ -311,10 +312,17 @@ then
 			echo attach
 			"$tmux" attach -t mcserver_console
 			break
+		# Linux控制台命令。其中使用的eval可能会导致危险行为，所以此功能默认禁用
+		# elif [ "$REPLY"x = "linuxcmd"x ]
+		# then
+		# 	read -e -p "请输入Linux控制台命令: " linuxcommand
+		# 	eval $linuxcommand
+		# 	break
 		elif [ "$REPLY"x = "help"x ]
 		then
 			echo "stop: 停止MC服务器"
 			echo "attach: 进入MC控制台(此操作无法撤销)"
+			echo "linuxcmd: 在此处执行Linux控制台命令(有安全隐患，如需启用请取消注释部分脚本内容)。不建议执行会花费较长时间的命令，否则可能会无法切出"
 			echo "help: 显示此帮助"
 		else
 			echo "未知命令: ${REPLY} 。输入 \"help\" 查看帮助"
