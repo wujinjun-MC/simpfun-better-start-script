@@ -193,10 +193,17 @@ then
 			echo attach
 			"$tmate" -S "$tmate_sock_MCconsole" attach-session
 			break
+		# Linux控制台命令。其中使用的eval可能会导致危险行为，所以此功能默认禁用
+		# elif [ "$REPLY"x = "linuxcmd"x ]
+		# then
+		# 	read -e -p "请输入Linux控制台命令: " linuxcommand
+		# 	eval $linuxcommand
+		# 	break
 		elif [ "$REPLY"x = "help"x ]
 		then
 			echo "stop: 停止MC服务器"
 			echo "attach: 进入MC控制台(此操作无法撤销)"
+			echo "linuxcmd: 在此处执行Linux控制台命令(有安全隐患，如需启用请取消注释部分脚本内容)。不建议执行会花费较长时间的命令，否则可能会无法切出"
 			echo "help: 显示此帮助"
 		else
 			echo "未知命令: ${REPLY} 。输入 \"help\" 查看帮助"

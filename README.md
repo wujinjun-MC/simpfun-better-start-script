@@ -21,3 +21,9 @@
 <!-- 5. 如果使用Dropbear模式，需要配置密钥。
     1. 在自己的电脑上生成公私钥，然后创建/.ssh/文件夹，创建/.ssh/authorized_keys，将公钥添加到此文件
     2. 使用非Dropbear模式连接容器的SSH -->
+6. 启动服务器
+7. 运行成功后在Simpfun控制台输入help查看帮助
+
+# `scripts`说明
+
+1. `diskusage.sh`: 使用 `ncdu` 显示磁盘空间的占用情况。在SSH内执行 `bash ~/scripts/diskusage.sh` 即可进入，按下`?`查看软件帮助
