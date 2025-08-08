@@ -12,7 +12,7 @@ start_timestamp=$(date +%s)
 #--------配置区--------
 # 文件权限准备: 为二进制文件和脚本文件添加执行权限(+x)
 chmod -R +x ~/bin/
-chmod -R +x ~/start-part.mcserver.sh
+chmod -R +x ~/start-part-mcserver.sh
 
 # 服务器核心文件路径
 export server_jar="server-release.jar"
@@ -203,6 +203,7 @@ then
 		fi
 	done
 elif [ "$sshmode"x = "1"x ]
+then
 	echo "[Tmux] 正在启动Handy-sshd"
 	# 构建handy-sshd命令行参数，自动检测是否需要添加参数
 		# 1. 初始化一个参数数组
