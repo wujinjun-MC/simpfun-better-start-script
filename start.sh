@@ -257,8 +257,8 @@ then
 	echo "---"
 	echo "▶️ [Tmux] 正在启动 Minecraft 服务器..."
 	"$tmux" new-session -ds mcserver_console 'TERM=xterm-256color bash ~/start-part-mcserver.sh $$ ; bash -l'
-	echo "✅ [Tmux] Minecraft 服务器已启动，运行在端口 $SERVER_PORT。"
-	echo "请使用命令 \"tmux attach -t mcserver_console\" 进入服务器控制台。"
+	echo "✅ [Tmux] Minecraft 服务器已开始启动，运行在端口 $SERVER_PORT。"
+	echo "连接SSH后，可以使用命令 \"tmux attach -t mcserver_console\" 进入服务器控制台。"
 	echo ""
 
 	# --- 重要提示 ---
