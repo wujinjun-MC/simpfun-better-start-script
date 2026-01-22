@@ -1,8 +1,0 @@
-使用rclone将服务器文件挂载到本地，像操作本地磁盘一样操作服务器文件系统
-1. 安装rclone后， "rclone config" 创建配置连接到直连SSH (假设 "server-direct")。不要使用SFTP地址，否则容易IO卡顿、文件损坏
-2. 
-Windows:
-rclone mount -v --vfs-cache-mode full --human-readable --cache-dir <缓存位置> --dir-cache-time 10s --file-perms 777 --network-mode --no-seek server-direct: Z:
-("Z:" 可以换成未使用的其他盘符)
-Linux:
-rclone mount -v --vfs-cache-mode full --human-readable --cache-dir <缓存位置> --dir-cache-time 10s --file-perms 777 --no-seek server-direct: <路径>
