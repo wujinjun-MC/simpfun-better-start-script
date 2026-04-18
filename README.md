@@ -1,4 +1,4 @@
-# \[Deleted\] 更好的简幻欢启动脚本(Minecraft服务器)
+# 更好的简幻欢启动脚本(Minecraft服务器)
 
 魔改简幻欢的start.sh，添加SSH功能，直接连接到容器/服务器控制台
 
