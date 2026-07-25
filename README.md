@@ -42,11 +42,11 @@ ACTIVE NOW!!! STAR!!! FORK!!!
 7. 运行成功后在Simpfun控制台输入help查看帮助
 
 ## `scripts`说明
-?TODO
+
+1. `diskusage.sh`: 使用 `ncdu` 显示磁盘空间的占用情况。在SSH内执行 `bash ~/scripts/diskusage.sh` 即可进入，按下`?`查看软件帮助
 
 ## Goals
 
 - [ ] 添加 Telnet 支持，专治SSH ban
 - [ ] 添加 SSH/Tmate/Telnet 开关，按需启用远程终端，减小攻击面 (避免扫端口等安全风险)
-
-1. `diskusage.sh`: 使用 `ncdu` 显示磁盘空间的占用情况。在SSH内执行 `bash ~/scripts/diskusage.sh` 即可进入，按下`?`查看软件帮助
+- [ ] 完善 `scripts`说明
