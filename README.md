@@ -41,6 +41,10 @@ ACTIVE NOW!!! STAR!!! FORK!!!
 6. 启动服务器
 7. 运行成功后在Simpfun控制台输入help查看帮助
 
+## Other Docs
+
+见 [docs](./docs)
+
 ## `scripts`说明
 
 1. `diskusage.sh`: 使用 `ncdu` 显示磁盘空间的占用情况。在SSH内执行 `bash ~/scripts/diskusage.sh` 即可进入，按下`?`查看软件帮助
