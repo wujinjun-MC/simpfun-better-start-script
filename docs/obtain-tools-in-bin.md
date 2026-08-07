@@ -18,10 +18,48 @@ Download `btop-x86_64-*` from `Artifacts`, unzip and rename to `btop`
 
 ### Build from source (从源码构建)
 
-Download source code in [release](https://github.com/aristocratos/btop/releases) or with git clone
+Download source code in [releases](https://github.com/aristocratos/btop/releases) or with git clone
 
-git clone 或 [release](https://github.com/aristocratos/btop/releases) 下载源码
+git clone 或 [releases](https://github.com/aristocratos/btop/releases) 下载源码
 
 `cd` to source directory, `make STATIC=true -j$(nproc)` and copy `btop` binary.
 
 `cd`到源码目录，`make STATIC=true -j$(nproc)`，复制 `btop` 二进制即可
+
+## Busybox
+
+## handy-sshd
+
+Already a portable sshd. Download from [releases](https://github.com/nwtgck/handy-sshd/releases)
+
+已经是便携sshd。从[releases](https://github.com/nwtgck/handy-sshd/releases)下载
+
+## htop
+
+## NCurses Disk Usage (ncdu)
+
+Use static binary from [official site](https://dev.yorhel.nl/ncdu)
+
+使用[官网](https://dev.yorhel.nl/ncdu)的静态二进制文件
+
+## pv
+
+## Tmate
+
+Use static binary from [releases](https://github.com/tmate-io/tmate/releases)
+
+使用[releases](https://github.com/tmate-io/tmate/releases)的静态二进制文件
+
+## Tmux
+
+Use static binary from [releases](https://github.com/pythops/tmux-linux-binary/releases) build by [pythops/tmux-linux-binary](https://github.com/pythops/tmux-linux-binary)
+
+使用[releases](https://github.com/pythops/tmux-linux-binary/releases)的静态二进制文件 (由[pythops/tmux-linux-binary](https://github.com/pythops/tmux-linux-binary)构建)
+
+## Other sources
+
+You can find some "portable" (statically linked) binary files, including those not included in this project:
+
+在以下列表中可以找到一些"便携的"(静态编译的)二进制文件，包括本项目没有的:
+
+- [perryflynn/static-binaries](https://github.com/perryflynn/static-binaries) ([Download](https://files.serverless.industries/bin/)): busybox, curl, dig+nsupdate, htop, iperf2, iperf3, jq, rsync/xxHash, smartctl, OpenSSH, tcpdump/libpcap
