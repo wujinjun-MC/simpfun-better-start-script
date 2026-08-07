@@ -7,6 +7,12 @@ from_pid=$1
 # openjdk17="/usr/bin/jdk/jdk-17.0.6/bin/java"
 # openjdk19="/usr/bin/jdk/jdk-19.0.2/bin/java"
 # openjdk21="/usr/bin/jdk/jdk-21.0.2/bin/java"
+# 将上面的路径填写好后,给下面对应的chmod取消掉
+# chmod +x ${openjdk8}
+# chmod +x ${openjdk11}
+# chmod +x ${openjdk17}
+# chmod +x ${openjdk19}
+# chmod +x ${openjdk21}
 
 # 这些参数已经在start.sh设置为环境变量，这个脚本将使用环境变量的值
 # maxmem=$((${SERVER_MEMORY} - 1500))

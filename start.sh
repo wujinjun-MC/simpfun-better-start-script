@@ -23,9 +23,9 @@ fi
 # 获取开始启动的时间戳
 export start_timestamp=$(date +%s)
 # 文件权限准备: 为二进制文件和脚本文件添加执行权限(+x)
-chmod -R +x ~/bin/
-chmod -R +x ~/start-part-mcserver.sh
-chmod -R +x ~/start-part-sshd.sh
+chmod -R +x ./bin/
+chmod -R +x ./start-part-mcserver.sh
+chmod -R +x ./start-part-sshd.sh
 
 
 #--------配置区--------
@@ -38,7 +38,8 @@ chmod -R +x ~/start-part-sshd.sh
 		### export maxmem=$((${SERVER_MEMORY} - 1500))
 		### export minmem=$((${maxmem} / 2))
 export allocate_perfcent=80
-export maxmem=$(echo "$SERVER_MEMORY*$allocate_perfcent/100" | busybox bc)
+export SERVER_MEMORY=$(free -m | awk '/^Mem:/ {print $2}')
+export maxmem=$(echo "$SERVER_MEMORY*$allocate_perfcent/100" | ./bin/busybox bc)
 export minmem=$maxmem
 # Java设置
 	## 不能与 内存设置 交换顺序，因为JVM参数中使用了其中的变量，交换后因值为空而出错
@@ -64,33 +65,33 @@ export jvm="-server -Xms${minmem}M -Xmx${maxmem}M -XX:+UseG1GC -Xss384k -XX:Rese
 	## SSH(远程终端)模式
 		### 设置为0使用Tmate, 在控制台输出访问ssh命令和web链接, 用于访问容器Shell和MC服务器控制台Shell
 		### 设置为1使用Handy-sshd, 需要一个独立端口用于sshd, MC控制台在tmux中, 登录ssh后执行 "tmux attach" 进入控制台
-export sshmode=1
+export sshmode=0
 	## SSH模式为1时，是否开启 用户名和密码登录
-		### ssh_use_user_password=1
+export ssh_use_user_password=1
 	## SSH模式为1时，是否开启 密钥登录
-		### ssh_use_key=1
+export ssh_use_key=0
 	## Tmate模式下创建Shell重试次数
 export tmate_retry=5
 	## sshd使用的端口
-export sshd_port=25495
+export sshd_port=22222
 	## SSH认证信息。如果 {用户名和密码} 或 {密钥} 组成部分都为空白，则不使用对应认证方法
 		### SSH用户名(尽量使用除了":"和"@"的ASCII可见字符)
-export ssh_username=wujinjun
+export ssh_username=admin
 		### SSH密码(尽量使用除了":"和"@"的ASCII可见字符) 留空则无需密码即可登录(非常不安全!)
 export ssh_password=mypassword
 		### SSH密钥(authorized_keys)路径
-export ssh_key_path=~/.ssh/authorized_keys
+export ssh_key_path=./.ssh/authorized_keys
 # 文件设置
 	## 指定服务器核心文件路径
-export server_jar="server-release.jar"
+export server_jar="server.jar"
 	## 指定tmate二进制文件的路径
-export tmate=~/bin/tmate
+export tmate=./bin/tmate
 	## 指定tmux二进制文件的路径
-export tmux=~/bin/tmux
+export tmux=./bin/tmux
 	## 指定关服标志文件, 用于判断是否停止服务器
-export fileCheckIfShutdownFromConsole=~/shutdown-mc-server
+export fileCheckIfShutdownFromConsole=./shutdown-mc-server
 	## 指定"自动休眠"标志文件，判断是否为 自动任务-0点自动关服并等待
-export fileCheckIfAutoTaskHour0AutoSleep=~/hour0-auto-sleep
+export fileCheckIfAutoTaskHour0AutoSleep=./hour0-auto-sleep
 	## 添加本地bin目录到路径
 export PATH=$PATH:$HOME/bin
 	## 显示环境变量
@@ -117,19 +118,19 @@ exit_actions()
 	if [ "$cleanBlueMap"x = "1"x ]
 	then
 		echo "正在清除BlueMap地图缓存"
-		rm -rf ~/bluemap/web/maps/*
+		rm -rf ./bluemap/web/maps/*
 	fi
 	## 清除DHSupport压缩区块缓存
 	if [ "$cleanDistantHorizonsSupport"x = "1"x ]
 	then
 		echo "正在清除DHSupport压缩区块缓存"
-		rm -f ~/plugins/DHSupport/data.sqlite
+		rm -f ./plugins/DHSupport/data.sqlite
 	fi
 	## 清除paper重映射插件缓存
 	if [ "$cleanPaperRemappedPlugins"x = "1"x ]
 	then
 		echo "正在清除paper重映射插件缓存"
-		rm -rf ~/plugins/.paper-remapped/*
+		rm -rf ./plugins/.paper-remapped/*
 	fi
 	exit $1
 }
@@ -145,9 +146,9 @@ then
 	echo "[Tmate]正在启动容器Shell"
 	numTmateTrials=1 # 重试次数计数器
 	fail1=0
-	mkdir -p ~/tmp/
-	tmate_sock_system=~/tmp/tmate-system_shell.sock
-	tmate_sock_MCconsole=~/tmp/tmate-minecraft_console.sock
+	mkdir -p ./tmp/
+	tmate_sock_system=./tmp/tmate-system_shell.sock
+	tmate_sock_MCconsole=./tmp/tmate-minecraft_console.sock
 	"$tmate" -S "$tmate_sock_system" new-session -P -d
 	while ! "$tmate" -S "$tmate_sock_system" wait tmate-ready # 等待到Tmate连接建立。返回非0代表连接建立失败
 	do
@@ -188,7 +189,7 @@ then
 		echo "[Tmate]启动服务器Shell失败(可能是网络问题), 重试中..."
 		numTmateTrials=$(( numTmateTrials + 1 ))
 		sleep 1
-		"$tmate" -S "$tmate_sock_MCconsole" new-session -d 'TERM=xterm-256color bash ~/start-part-mcserver.sh'" $$"' ; bash -l'
+		"$tmate" -S "$tmate_sock_MCconsole" new-session -d 'TERM=xterm-256color bash ./start-part-mcserver.sh'" $$"' ; bash -l'
 	done
 	if [ "$fail2"x = "0"x ]
 	then
@@ -208,7 +209,7 @@ then
 	trap exit_actions INT
 	# echo "[$(date +%H:%M:%S)] [Server thread/INFO]: Done (${done_duration}.00s)! For help, type \"help\""
 	echo "正在监听 latest.log 判断服务器何时启动成功"
-	tail -F ~/logs/latest.log | while IFS= read -r line
+	tail -F ./logs/latest.log | while IFS= read -r line
 	do
 		if [[ "$line" == *"For help, type \"help\""* ]]
 		then
@@ -282,7 +283,7 @@ then
 	echo "[Tmux] 正在启动Handy-sshd"
 	# 构建handy-sshd命令行参数，自动检测是否需要添加参数
 		# 1. 初始化一个参数数组
-	export handy_sshd_command=~/bin/handy-sshd
+	export handy_sshd_command=./bin/handy-sshd
 	sshd_args=("-p" "$sshd_port")
 		# 2. 判断是否添加 --user 参数
 	if [[ -n "$ssh_username" && -n "$ssh_password" ]]; then
@@ -296,14 +297,14 @@ then
 		# 将参数数组中的元素拼接成一个字符串
 	export handy_sshd_args="${sshd_args[@]}"
 	# echo "[Tmux] 执行命令: $handy_sshd_command $handy_sshd_args" # 不安全
-	"$tmux" new-session -ds handy-sshd "bash ~/start-part-sshd.sh | tee sshd-log.txt"
+	"$tmux" new-session -ds handy-sshd "bash ./start-part-sshd.sh | tee sshd-log.txt"
 	# "$tmux" new-session -ds handy-sshd "$handy_sshd_command $handy_sshd_args"
 	ssh_command="ssh -p $sshd_port"
 	if [[ -n "$ssh_username" ]]; then
-		ssh_command2="$ssh_username@play.simpfun.cn"
+		ssh_command2="$ssh_username@$(curl -s ifconfig.me)"
 	else
 		# 如果没有用户名，只显示主机地址
-		ssh_command2="play.simpfun.cn"
+		ssh_command2="$(curl -s ifconfig.me)"
 	fi
 	echo "---"
 	echo "✅ SSH服务器已启动，监听端口: $sshd_port"
@@ -311,10 +312,10 @@ then
 	echo "$ssh_command $ssh_command2"
 	if [[ -n "$ssh_key_path" ]]; then
 		echo "💡 你已设置密钥连接，使用对应的密钥对将无需输入用户名和密码(如果有)"
-		echo "   命令示例: ssh -p $sshd_port -i /path/to/your/private_key ${ssh_username}@play.simpfun.cn"
+		echo "   命令示例: ssh -p $sshd_port -i /path/to/your/private_key ${ssh_username}@$(curl -s ifconfig.me)"
 	fi
 	echo "➡️ 连接后，使用以下命令进入控制台："
-	echo "tmux attach -t mcserver_console"
+	echo "./bin/tmux attach -t mcserver_console"
 	echo "---"
 
 	# --- SSH端口转发提示 ---
@@ -332,9 +333,9 @@ then
 	echo "🚀 启动 Minecraft 服务器"
 	echo "---"
 	echo "▶️ [Tmux] 正在启动 Minecraft 服务器..."
-	"$tmux" new-session -ds mcserver_console 'TERM=xterm-256color bash ~/start-part-mcserver.sh $$ ; bash -l'
+	"$tmux" new-session -ds mcserver_console 'TERM=xterm-256color bash ./start-part-mcserver.sh $$ ; bash -l'
 	echo "✅ [Tmux] Minecraft 服务器已开始启动，运行在端口 $SERVER_PORT。"
-	echo "连接SSH后，可以使用命令 \"tmux attach -t mcserver_console\" 进入服务器控制台。"
+	echo "连接SSH后，可以使用命令 \"./bin/tmux attach -t mcserver_console\" 进入服务器控制台。"
 	echo ""
 
 	# --- 重要提示 ---
@@ -352,7 +353,7 @@ then
 	echo "---"
 	echo "正在监听 \"latest.log\" 文件，判断服务器何时启动成功..."
 	trap exit_actions INT
-	tail -F ~/logs/latest.log | while IFS= read -r line
+	tail -F ./logs/latest.log | while IFS= read -r line
 	do
 		if [[ "$line" == *"For help, type \"help\""* ]]
 		then
