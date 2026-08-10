@@ -48,26 +48,38 @@ export minmem=$maxmem
 		### Aikar's Flag 太旧了，部分参数不适合 [现代Minecraft版本] & [Java 21]，需要修改。
 		### 参照: [【心得】Minecraft 伺服器優化反思：Aikar's Flags 是否已成過去式？ (by LogoCat)](https://forum.gamer.com.tw/Co.php?bsn=18673&sn=1099619)
 		### "-XX:MaxMetaspaceSize=384m" 已移除，在插件很多的服务器上会导致大量插件崩溃
-export jvm="-server -Xms${minmem}M -Xmx${maxmem}M -XX:+UseG1GC -Xss384k -XX:ReservedCodeCacheSize=256m -XX:MaxDirectMemorySize=128m -XX:+UseStringDeduplication -XX:+PerfDisableSharedMem -XX:+HeapDumpOnOutOfMemoryError -XX:+UnlockExperimentalVMOptions -XX:+DisableExplicitGC -XX:+AlwaysPreTouch -XX:G1ReservePercent=10 -XX:InitiatingHeapOccupancyPercent=15 -XX:G1MixedGCLiveThresholdPercent=85 -XX:G1RSetUpdatingPauseTimePercent=5 -XX:SurvivorRatio=32 -XX:MaxTenuringThreshold=1 -XX:+EnableDynamicAgentLoading -DIKnowThereAreNoNMSBindingsForv1_21_8ButIWillProceedAnyway -Djava.security.manager=allow -Dtechnicjelle.updatechecker.disabled" # " -XX:MaxMetaspaceSize=384m -Dpaper.disableGameRuleLimits=true -Dpaper.preferSparkPlugin=true -Dcom.mojang.eula.agree=true -Dpaper.disableChannelLimit"
+export jvm="-server -Xms${minmem}M -Xmx${maxmem}M -XX:+UseG1GC -Xss384k -XX:ReservedCodeCacheSize=256m -XX:MaxDirectMemorySize=128m -XX:+UseStringDeduplication -XX:+PerfDisableSharedMem -XX:+HeapDumpOnOutOfMemoryError -XX:+UnlockExperimentalVMOptions -XX:+DisableExplicitGC -XX:+AlwaysPreTouch -XX:G1ReservePercent=10 -XX:InitiatingHeapOccupancyPercent=15 -XX:G1MixedGCLiveThresholdPercent=85 -XX:G1RSetUpdatingPauseTimePercent=5 -XX:SurvivorRatio=32 -XX:MaxTenuringThreshold=1 -XX:+EnableDynamicAgentLoading -DIKnowThereAreNoNMSBindingsForv1_21_8ButIWillProceedAnyway -Dtechnicjelle.updatechecker.disabled -Dorg.bukkit.plugin.java.LibraryLoader.centralURL=https://maven-central-asia.storage-download.googleapis.com/maven2 -DLeaf.library-download-repo=https://maven.aliyun.com/repository/public -DLeaf.disable-vanilla-profiler -DLeaf.disable-vanilla-debug-feature -Dgale.log.warning.offline.mode" # " -Dpaper.disableGameRuleLimits=true -Dpaper.preferSparkPlugin=true -Dcom.mojang.eula.agree=true -Dpaper.disableChannelLimit -Dpaper.disableMigrationDelay -Dpaper.maxChatCommandInputSize=4096 -DLeaf.enableFMA"
 	## 其他JVM参数说明:
 		### + "-XX:+EnableDynamicAgentLoading" (Spark修复: Java21不显示错误信息，Java22继续使用高效方式获取性能数据。参见 https://spark.lucko.me/docs/misc/Java-agent-warning)
 		### + "-DIKnowThereAreNoNMSBindingsForv1_21_8ButIWillProceedAnyway" (用于1.21.8强制加载Terra(地形生成器)插件)
-		### + "-Djava.security.manager=allow" (允许使用Network Interceptor)
+		### + "-Djava.security.manager=allow" (允许使用需要 "security manager" 的插件，例如Network Interceptor。Java 25 及以后不允许此功能，已经删除)
 		### + "-Dtechnicjelle.updatechecker.disabled" (关闭BlueMapFloodgate的更新检查)
+		### + "-Dorg.bukkit.plugin.java.LibraryLoader.centralURL=https://maven-central-asia.storage-download.googleapis.com/maven2" (更改Maven中心服务器，可以设置加速镜像，减少下载库文件的时间。更多镜像: https://storage-download.googleapis.com/maven-central/index.html)
+		### + "-DLeaf.library-download-repo=https://maven.aliyun.com/repository/public" (更改Maven库下载服务器，可以设置加速镜像，减少下载库文件的时间。默认使用阿里云镜像)
+		### + "-DLeaf.disable-vanilla-profiler" (禁用原版的性能分析器，改善性能，需要分析性能可以使用 Spark 代替)
+		### + "-DLeaf.disable-vanilla-debug-feature" (禁用原版的调试器，改善性能，特别是人数非常多的情况下)
+		### + "-Dgale.log.warning.offline.mode" (禁用离线模式提醒)
 		### + "-Dpaper.disableGameRuleLimits=true" (关闭gamerule检查(比如矿车最大速度限制)，用于乐趣服务器。默认禁用)
 		### + "-Dpaper.preferSparkPlugin=true" (使用外置 & 关闭内置Spark插件。默认禁用)
 		### + "-Dcom.mojang.eula.agree=true" (同意EULA，忽略eula.txt。默认禁用)
 		### + "-Dpaper.disableChannelLimit" (禁用插件通讯频道数量限制，玩家不会因为安装过多mod被踢出。在公共服务器上不建议启用。默认禁用)
+		### + "-Dpaper.disableMigrationDelay" (关闭存档升级前的30秒等待 "World storage migration is required during startup..."。默认禁用)
+		### + "-Dpaper.maxChatCommandInputSize=4096" (更改聊天中命令长度限制，原版不会超过256。默认禁用)
+		### + "-DLeaf.enableFMA" (使用 [Fused-Multiply-Add operations](https://en.wikipedia.org/wiki/Multiply%E2%80%93accumulate_operation) 加速数学计算，需要CPU支持FMA指令集，否则会降低速度。默认禁用)
+	## 寻找其他JVM参数
+		### https://docs.papermc.io/paper/reference/system-properties/
+		### https://www.leafmc.one/en/docs/config/jvm-flags
 	## 备用JVM参数，除了内存信息外什么都不添加，用于临时救急
 # export jvm="-Xms${minmem}M -Xmx${maxmem}M"
 # SSH设置
 	## SSH(远程终端)模式
 		### 设置为0使用Tmate, 在控制台输出访问ssh命令和web链接, 用于访问容器Shell和MC服务器控制台Shell
 		### 设置为1使用Handy-sshd, 需要一个独立端口用于sshd, MC控制台在tmux中, 登录ssh后执行 "tmux attach" 进入控制台
+		### [!TODO] 设置为2使用Telnet, 需要一个独立端口用于Telnet, MC控制台在tmux中, 登录ssh后执行 "tmux attach" 进入控制台
 export sshmode=1
-	## SSH模式为1时，是否开启 用户名和密码登录
+	## SSH模式为1时，是否开启 用户名和密码登录 (Deprecated: Auto detect)
 		### ssh_use_user_password=1
-	## SSH模式为1时，是否开启 密钥登录
+	## SSH模式为1时，是否开启 密钥登录 (Deprecated: Auto detect)
 		### ssh_use_key=1
 	## Tmate模式下创建Shell重试次数
 export tmate_retry=5
