@@ -58,6 +58,10 @@ ACTIVE NOW!!! STAR!!! FORK!!!
 
 见 [docs](./docs)
 
+### 与其他项目/工具对比
+
+- [OPanel](docs/compare-with-opanel.md)
+
 ## `scripts`说明
 
 1. `diskusage.sh`: 使用 `ncdu` 显示磁盘空间的占用情况。在SSH内执行 `bash ~/scripts/diskusage.sh` 即可进入，按下`?`查看软件帮助
