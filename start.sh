@@ -48,7 +48,7 @@ export minmem=$maxmem
 		### Aikar's Flag 太旧了，部分参数不适合 [现代Minecraft版本] & [Java 21]，需要修改。
 		### 参照: [【心得】Minecraft 伺服器優化反思：Aikar's Flags 是否已成過去式？ (by LogoCat)](https://forum.gamer.com.tw/Co.php?bsn=18673&sn=1099619)
 		### "-XX:MaxMetaspaceSize=384m" 已移除，在插件很多的服务器上会导致大量插件崩溃
-export jvm="-server -Xms${minmem}M -Xmx${maxmem}M -XX:+UseG1GC -Xss384k -XX:ReservedCodeCacheSize=256m -XX:MaxDirectMemorySize=128m -XX:+UseStringDeduplication -XX:+PerfDisableSharedMem -XX:+HeapDumpOnOutOfMemoryError -XX:+UnlockExperimentalVMOptions -XX:+DisableExplicitGC -XX:+AlwaysPreTouch -XX:G1ReservePercent=10 -XX:InitiatingHeapOccupancyPercent=15 -XX:G1MixedGCLiveThresholdPercent=85 -XX:G1RSetUpdatingPauseTimePercent=5 -XX:SurvivorRatio=32 -XX:MaxTenuringThreshold=1 -XX:+EnableDynamicAgentLoading -DIKnowThereAreNoNMSBindingsForv1_21_8ButIWillProceedAnyway -Dtechnicjelle.updatechecker.disabled -Dorg.bukkit.plugin.java.LibraryLoader.centralURL=https://maven-central-asia.storage-download.googleapis.com/maven2 -DLeaf.library-download-repo=https://maven.aliyun.com/repository/public -DLeaf.disable-vanilla-profiler -DLeaf.disable-vanilla-debug-feature -Dgale.log.warning.offline.mode" # " -Dpaper.disableGameRuleLimits=true -Dpaper.preferSparkPlugin=true -Dcom.mojang.eula.agree=true -Dpaper.disableChannelLimit -Dpaper.disableMigrationDelay -Dpaper.maxChatCommandInputSize=4096 -DLeaf.enableFMA"
+export jvm="-server -Xms${minmem}M -Xmx${maxmem}M -XX:+UseG1GC -Xss384k -XX:ReservedCodeCacheSize=256m -XX:MaxDirectMemorySize=128m -XX:+UseStringDeduplication -XX:+PerfDisableSharedMem -XX:+HeapDumpOnOutOfMemoryError -XX:+UnlockExperimentalVMOptions -XX:+DisableExplicitGC -XX:+AlwaysPreTouch -XX:G1ReservePercent=10 -XX:InitiatingHeapOccupancyPercent=15 -XX:G1MixedGCLiveThresholdPercent=85 -XX:G1RSetUpdatingPauseTimePercent=5 -XX:SurvivorRatio=32 -XX:MaxTenuringThreshold=1 -XX:+EnableDynamicAgentLoading -DIKnowThereAreNoNMSBindingsForv1_21_8ButIWillProceedAnyway -Dtechnicjelle.updatechecker.disabled -Dorg.bukkit.plugin.java.LibraryLoader.centralURL=https://maven-central-asia.storage-download.googleapis.com/maven2 -DLeaf.library-download-repo=https://maven.aliyun.com/repository/public -DLeaf.disable-vanilla-profiler -DLeaf.disable-vanilla-debug-feature -Dgale.log.warning.offline.mode" # " -Dpaper.disableGameRuleLimits=true -Dpaper.preferSparkPlugin=true -Dcom.mojang.eula.agree=true -Dpaper.disableChannelLimit -Dpaper.disableMigrationDelay -Dpaper.maxChatCommandInputSize=4096 -javaagent:mods-java-agent/ChunkGuardAgent.jar -Dchunkguard.shadow=true -javaagent:mods-java-agent/LazyContainerAgent.jar -Dlazycontainer.verbose=true -Dlazycontainer.shadow=true -DLeaf.enableFMA"
 	## 其他JVM参数说明:
 		### + "-XX:+EnableDynamicAgentLoading" (Spark修复: Java21不显示错误信息，Java22继续使用高效方式获取性能数据。参见 https://spark.lucko.me/docs/misc/Java-agent-warning)
 		### + "-DIKnowThereAreNoNMSBindingsForv1_21_8ButIWillProceedAnyway" (用于1.21.8强制加载Terra(地形生成器)插件)
@@ -65,6 +65,10 @@ export jvm="-server -Xms${minmem}M -Xmx${maxmem}M -XX:+UseG1GC -Xss384k -XX:Rese
 		### + "-Dpaper.disableChannelLimit" (禁用插件通讯频道数量限制，玩家不会因为安装过多mod被踢出。在公共服务器上不建议启用。默认禁用)
 		### + "-Dpaper.disableMigrationDelay" (关闭存档升级前的30秒等待 "World storage migration is required during startup..."。默认禁用)
 		### + "-Dpaper.maxChatCommandInputSize=4096" (更改聊天中命令长度限制，原版不会超过256。默认禁用)
+		### + "-javaagent:mods-java-agent/ChunkGuardAgent.jar" (启用 Java Agent mod "ChunkGuardAgent"，详见 `mods-java-agent/README.md`。默认禁用)
+			#### + "-Dchunkguard.shadow=true" ("dry-run" 模式)
+		### + "-javaagent:mods-java-agent/LazyContainerAgent.jar -Dlazycontainer.verbose=true" (启用 Java Agent mod "LazyContainerAgent"，详见 `mods-java-agent/README.md`。默认禁用)
+			#### + "-Dlazycontainer.shadow=true" ("dry-run" 模式)
 		### + "-DLeaf.enableFMA" (使用 [Fused-Multiply-Add operations](https://en.wikipedia.org/wiki/Multiply%E2%80%93accumulate_operation) 加速数学计算，需要CPU支持FMA指令集，否则会降低速度。默认禁用)
 	## 寻找其他JVM参数
 		### https://docs.papermc.io/paper/reference/system-properties/

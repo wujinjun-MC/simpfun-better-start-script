@@ -13,6 +13,8 @@ ACTIVE NOW!!! STAR!!! FORK!!!
 5. 自动清理垃圾，防止过度消耗积分和占用宝贵的免费资源
 6. 可通过Tailscale (即将到来) 远程调试，避免直接暴露端口，减小攻击面
 
+更多功能查看 [Features](#features)
+
 ## ~~为什么要归档~~
 
 ~~1.19 官方公告显示部分用户利用SSH功能违规商业活动、挤占服务器资源，影响了正常用户的体验。~~
@@ -23,13 +25,20 @@ ACTIVE NOW!!! STAR!!! FORK!!!
 
 ## Features
 
-添加可以直接使用的应用程序:
-1. btop和htop: 性能监视器
-2. handy-sshd: SSH
-<!-- 3. dropbear*, dbclient: SSH服务端(及工具)、SSH客户端 -- 无法解决容器只读带来的问题，所以无法添加-->
-4. busybox: 基础功能
-5. tmate和tmux: 终端工具
-6. ncdu: 存储空间占用分析
+- 远程控制: 支持SSH、Tmate、Telnet (TODO) 远程连接服务器，方便管理Minecraft服务器
+- 终端管理: 支持tmux，远程调试过程中可以随时断开连接，服务器仍然运行
+- 性能监控: 支持htop和btop等性能监控工具，方便查看服务器的CPU、内存、网络等性能指标
+- 存档保护: 每天0:00~1:00如果积分不足，服务器会被强制关闭，不保存存档，开启保护功能后，会自动"休息"1小时，同时保存存档，防止存档丢失
+- 预置二进制文件，无需手动编译和寻找依赖:
+	1. btop和htop: 性能监视器
+	2. handy-sshd: SSH
+	<!-- 3. dropbear*, dbclient: SSH服务端(及工具)、SSH客户端 -- 无法解决容器只读带来的问题，所以无法添加-->
+	4. busybox: 基础功能
+	5. tmate和tmux: 终端工具
+	6. ncdu: 存储空间占用分析
+- 支持 Java Agent mod，实现Bukkit/Spigot/Paper插件无法实现的修改
+	- Example:
+		- [ChunkGuardAgent](https://github.com/kuohsuanlo/ChunkGuardAgent)
 
 拆分出start-part-mcserver.sh用于启动Minecraft服务器，加入优化JVM参数、自动重启、防止Ctrl-C停止
 
