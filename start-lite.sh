@@ -111,7 +111,8 @@ then
 		echo "[Tmate]服务器s启动成功"
 		"$tmate" -S "$tmate_sock_MCconsole" send-key q
 		echo -n "\"SSL相关小工具\"命令"
-		e_cmd=$(echo -e "\"$tmate\" -S \"$tmate_sock_MCconsole\" display -p '#{tmate_ssl}' | tee tmate-mc_console-ssl.txt | sed \"s/\x53\x53\x48/SSL/g;s/\x73\x73\x68/ssl/g\"") # 显示"SSL相关小工具"连接方式
+		e_cmd=$(echo -e "\"$tmate\" -S \"$tmate_sock_MCconsole\" display -p '#{tmate_ssl}' | tee tmate-mc_console-ssl.txt | sed \"s/\x53\x53\x48/SSL/g;s/\x73\x73\x68/ssl/g\"")
+		eval "$e_cmd"
 		echo -n "Web页面"
 		"$tmate" -S "$tmate_sock_MCconsole" display -p '#{tmate_web}' | tee tmate-mc_console-web.txt # 显示Web连接方式
 		echo
