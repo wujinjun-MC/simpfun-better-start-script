@@ -26,6 +26,8 @@ export start_timestamp=$(date +%s)
 chmod -R +x ~/bin/
 chmod -R +x ~/start-part-mcserver.sh
 chmod -R +x ~/start-part-sshd.sh
+chmod -R +x ~/start-part-ssld.sh
+chmod -R +x ~/start-part-cpolar.sh
 # 添加本地bin目录到路径 (解决busybox等工具缺失)
 export PATH=$PATH:$HOME/bin
 
@@ -81,10 +83,15 @@ export jvm="-server -Xms${minmem}M -Xmx${maxmem}M -XX:+UseG1GC -Xss384k -XX:Rese
 # export jvm="-Xms${minmem}M -Xmx${maxmem}M"
 # 远程控制设置
 	## 远程控制方式
-		### 设置为-1则关闭此功能
+		### 设置为-1则关闭此功能 (默认)
 		### 设置为0使用Tmate, 在控制台输出访问ssh命令和web链接, 用于访问容器Shell和MC服务器控制台Shell
 		### 设置为1使用Handy-sshd, 需要一个独立端口用于sshd, MC控制台在tmux中, 登录ssh后执行 "tmux attach" 进入控制台
-		### [!TODO] 设置为2使用Telnet, 需要一个独立端口用于Telnet, MC控制台在tmux中, 登录ssh后执行 "tmux attach" 进入控制台
+		### 设置为2使用Handy-sshd(非直接暴露端口) (as `cpolar_friend_1_ssl`) + Cpolar
+			#### 在 https://dashboard.cpolar.com/signup 注册账号，然后在 `.config/cpolar` 文件夹中配置。 `config.yml` 填入获得的 authtoken，设置各个端口 (最多可设置4个，如有更多需要，可利用SSH的端口映射功能) 。启动后，在cpolar控制台查看连接信息
+			#### 不要暴露ssh端口: 配置`sshd使用的端口` (sshd_port) 时，设置为未分配给实例的端口，此端口只能被localhost访问，在cpolar配置文件中指向此端口以通过cpolar访问
+			#### 控制台日志显示，所有的 "ssh" 显示为 ssl
+			#### MC控制台在tmux中, 登录ssh后执行 "tmux attach" 进入控制台
+		### [!TODO] 设置为3使用Telnet, 需要一个独立端口用于Telnet, MC控制台在tmux中, 登录ssh后执行 "tmux attach" 进入控制台
 export remotemode=-1
 	## SSH模式为1时，是否开启 用户名和密码登录 (Deprecated: Auto detect)
 		### ssh_use_user_password=1
@@ -93,7 +100,7 @@ export remotemode=-1
 	## Tmate模式下创建Shell重试次数
 export tmate_retry=5
 	## sshd使用的端口
-export sshd_port=25495
+export sshd_port=12345
 	## SSH认证信息。如果 {用户名和密码} 或 {密钥} 组成部分都为空白，则不使用对应认证方法
 		### SSH用户名(尽量使用除了":"和"@"的ASCII可见字符)
 export ssh_username=wujinjun
@@ -101,6 +108,18 @@ export ssh_username=wujinjun
 export ssh_password=mypassword
 		### SSH密钥(authorized_keys)路径
 export ssh_key_path=~/.ssh/authorized_keys
+	## remotemode=2 专属
+		## cpolar 配置文件位置
+export cpolar_config=~/.config/cpolar/config.yml
+		## ssld使用的端口
+export ssld_port=12345
+		## 认证信息。如果 {用户名和密码} 或 {密钥} 组成部分都为空白，则不使用对应认证方法
+			### 用户名(尽量使用除了":"和"@"的ASCII可见字符)
+export ssl_username=wujinjun
+			### 密码(尽量使用除了":"和"@"的ASCII可见字符) 留空则无需密码即可登录(非常不安全!)
+export ssl_password=mypassword
+			### 密钥(authorized_keys)路径
+export ssl_key_path=~/.ssh/akeys
 # 文件设置
 	## 指定服务器核心文件路径
 export server_jar="server-release.jar"
@@ -108,6 +127,8 @@ export server_jar="server-release.jar"
 export tmate=~/bin/tmate
 	## 指定tmux二进制文件的路径
 export tmux=~/bin/tmux
+	## 指定cpolar二进制文件的路径
+export cpolar=~/bin/cpolar
 	## 指定关服标志文件, 用于判断是否停止服务器
 export fileCheckIfShutdownFromConsole=~/shutdown-mc-server
 	## 指定"自动休眠"标志文件，判断是否为 自动任务-0点自动关服并等待
@@ -124,7 +145,7 @@ export cleanDistantHorizonsSupport=0
 		### 清除paper重映射插件缓存
 export cleanPaperRemappedPlugins=0
 # 自动任务
-	## 是否启用 0点自动关服并等待 - 在0点时关闭服务器，等待一定时间(默认3600秒/60分钟)再开服，用于防止服务器损坏，因为如果积分不足，实例在此时会被强制停止。(暂时仅支持Handy-sshd模式)
+	## 是否启用 0点自动关服并等待 - 在0点时关闭服务器，等待一定时间(默认3600秒/60分钟)再开服，用于防止服务器损坏，因为如果积分不足，实例在此时会被强制停止。(暂时仅支持使用Handy-sshd的模式)
 export enable_autotask_hour0_auto_sleep=1
 # 结束动作设置
 	## 脚本结束动作，收到SIGINT结束时执行清理
@@ -159,6 +180,33 @@ exit_actions()
 rm -f "$fileCheckIfShutdownFromConsole"
 rm -f "$fileCheckIfAutoTaskHour0AutoSleep"
 
+# 自动任务-0点自动关服并等待
+if [ "$remotemode"x = "1"x ] || [ "$remotemode"x = "2"x ]; then
+	if [ "$enable_autotask_hour0_auto_sleep"x = "1"x ]; then
+		echo "✅ [定时任务] \"0点自动关服并等待\" 已启用。"
+		(
+			while true
+			do
+				current_hour=$(date +%H)
+				current_minute=$(date +%M)
+
+				if [ "$current_hour"x = "00"x ] && [ "$current_minute"x = "00"x ]
+				then
+					echo "检测到0点整，正在创建睡眠标志文件并发送停止命令，以保护服务器..."
+					touch "$fileCheckIfAutoTaskHour0AutoSleep"
+					"$tmux" send-keys -t mcserver_console "minecraft:stop" Enter
+					# 360秒后也会自动移除睡眠标志文件，如果没有正确触发睡眠，手动stop时不会进入睡眠
+					sleep 360
+					rm "$fileCheckIfAutoTaskHour0AutoSleep"
+				fi
+				sleep 60
+			done
+		) &
+	else
+		echo "❌ [定时任务] \"0点自动关服并等待\" 已禁用。"
+	fi
+fi
+
 if [ "$remotemode"x = "-1"x ]
 then
 	TERM=xterm-256color bash ~/start-part-mcserver.sh $$
@@ -167,31 +215,6 @@ fi
 
 if [ "$remotemode"x = "0"x ]
 then
-    # 自动任务-0点自动关服并等待
-    if [ "$enable_autotask_hour0_auto_sleep"x = "1"x ]
-    then
-        echo "✅ [定时任务] \"0点自动关服并等待\" 已启用。"
-        (
-            while true
-            do
-                current_hour=$(date +%H)
-                current_minute=$(date +%M)
-
-                if [ "$current_hour"x = "00"x ] && [ "$current_minute"x = "00"x ]
-                then
-                    echo "检测到0点整，正在创建睡眠标志文件并发送停止命令，以保护服务器..."
-                    touch "$fileCheckIfAutoTaskHour0AutoSleep"
-                    "$tmux" send-keys -t mcserver_console "minecraft:stop" Enter
-					# 360秒后也会自动移除睡眠标志文件，如果没有正确触发睡眠，手动stop时不会进入睡眠
-					sleep 360
-					rm "$fileCheckIfAutoTaskHour0AutoSleep"
-                fi
-                sleep 60
-            done
-        ) &
-    else
-        echo "❌ [定时任务] \"0点自动关服并等待\" 已禁用。"
-    fi
 	echo "[Tmate]正在启动容器Shell"
 	numTmateTrials=1 # 重试次数计数器
 	fail1=0
@@ -306,31 +329,6 @@ then
 	done
 elif [ "$remotemode"x = "1"x ]
 then
-    # 自动任务-0点自动关服并等待
-    if [ "$enable_autotask_hour0_auto_sleep"x = "1"x ]
-    then
-        echo "✅ [定时任务] \"0点自动关服并等待\" 已启用。"
-        (
-            while true
-            do
-                current_hour=$(date +%H)
-                current_minute=$(date +%M)
-
-                if [ "$current_hour"x = "00"x ] && [ "$current_minute"x = "00"x ]
-                then
-                    echo "检测到0点整，正在创建睡眠标志文件并发送停止命令，以保护服务器..."
-                    touch "$fileCheckIfAutoTaskHour0AutoSleep"
-                    "$tmux" send-keys -t mcserver_console "minecraft:stop" Enter
-					# 360秒后也会自动移除睡眠标志文件，如果没有正确触发睡眠，手动stop时不会进入睡眠
-					sleep 360
-					rm "$fileCheckIfAutoTaskHour0AutoSleep"
-                fi
-                sleep 60
-            done
-        ) &
-    else
-        echo "❌ [定时任务] \"0点自动关服并等待\" 已禁用。"
-    fi
 	echo "[Tmux] 正在启动Handy-sshd"
 	# 构建handy-sshd命令行参数，自动检测是否需要添加参数
 		# 1. 初始化一个参数数组
@@ -387,6 +385,139 @@ then
 	"$tmux" new-session -ds mcserver_console 'TERM=xterm-256color bash ~/start-part-mcserver.sh $$ ; bash -l'
 	echo "✅ [Tmux] Minecraft 服务器已开始启动，运行在端口 $SERVER_PORT。"
 	echo "连接SSH后，可以使用命令 \"tmux attach -t mcserver_console\" 进入服务器控制台。"
+	echo ""
+
+	# --- 重要提示 ---
+	echo "---"
+	echo "Note: 如何保持服务器运行"
+	echo "---"
+	echo "如果你希望在退出脚本后服务器进程仍然运行，"
+	echo "请在MC控制台输入stop停止，在MC服务器重启前快速找到旧的启动脚本进程并结束它。使用以下步骤："
+	echo "1. 使用 \"pgrep -a bash\" 查找带有start-part-mcserver.sh的 bash进程 的 PID。"
+	echo "2. 使用 \"kill -s 9 <PID>\" 强制结束该进程。"
+	echo "这样可以防止新的启动脚本启动后与旧的脚本冲突。"
+	echo ""
+	echo "---"
+	echo "⏳ 日志监控"
+	echo "---"
+	echo "正在监听 \"latest.log\" 文件，判断服务器何时启动成功..."
+	trap exit_actions INT
+	tail -F ~/logs/latest.log | while IFS= read -r line
+	do
+		if [[ "$line" == *"For help, type \"help\""* ]]
+		then
+			done_timestamp=$(date +%s)
+			done_duration=$(( done_timestamp - start_timestamp ))
+			echo "$line"
+			echo "真实启动时间(从按下启动按钮到服务器日志显示\"Done\"): $done_duration"
+			break
+		fi
+	done
+	echo "现在开始, 可以在此控制台输入\"help\"获取帮助"
+	while true
+	do
+		read -p "> " REPLY
+		if [ "$REPLY"x = "stop"x ]
+		then
+			echo 正在停止服务器
+			sleep 1
+			"$tmux" send-keys -t mcserver_console "minecraft:stop"
+			"$tmux" send-keys -t mcserver_console Enter
+			touch "$fileCheckIfShutdownFromConsole"
+			"$tmux" attach -t mcserver_console
+			break
+		elif [ "$REPLY"x = "attach"x ]
+		then
+			echo attach
+			"$tmux" attach -t mcserver_console
+			break
+		# Linux控制台命令。其中使用的eval可能会导致危险行为，所以此功能默认禁用
+		# elif [ "$REPLY"x = "linuxcmd"x ]
+		# then
+		# 	read -e -p "请输入Linux控制台命令: " linuxcommand
+		# 	eval $linuxcommand
+		# 	break
+		elif [ "$REPLY"x = "help"x ]
+		then
+			echo "stop: 停止MC服务器"
+			echo "attach: 进入MC控制台(此操作无法撤销)"
+			echo "linuxcmd: 在此处执行Linux控制台命令(有安全隐患，如需启用请取消注释部分脚本内容)。不建议执行会花费较长时间的命令，否则可能会无法切出"
+			echo "help: 显示此帮助"
+		else
+			echo "未知命令: ${REPLY} 。输入 \"help\" 查看帮助"
+		fi
+	done
+fi
+elif [ "$remotemode"x = "2"x ]
+then
+	echo "[Tmux] 正在启动cpolar_friend_1_ssl"
+	# 构建cpolar_friend_1_ssl命令行参数，自动检测是否需要添加参数
+		# 1. 初始化一个参数数组
+	export handy_ssld_command=~/bin/cpolar_friend_1_ssl
+		## 设置监听为127.0.0.1，容器外无法访问，确保安全
+	ssld_args=("--host" "127.0.0.1" "-p" "$ssld_port")
+		# 2. 判断是否添加 --user 参数
+	if [[ -n "$ssl_username" && -n "$ssl_password" ]]; then
+		ssld_args+=("--user" "$ssl_username:$ssl_password")
+	fi
+		# 3. 判断是否添加 --keys 参数
+	if [[ -n "$ssl_key_path" ]]; then
+		ssld_args+=("--keys" "$ssl_key_path")
+	fi
+		# 4. 构建最终在 tmux 中执行的命令
+		# 将参数数组中的元素拼接成一个字符串
+	export handy_ssld_args="${ssld_args[@]}"
+	# echo "[Tmux] 执行命令: $handy_ssld_command $handy_ssld_args" # 不安全
+	"$tmux" new-session -ds cpolar_friend_1_ssl "bash ~/start-part-ssld.sh | tee ssld-log.txt"
+	# "$tmux" new-session -ds cpolar_friend_1_ssl "$handy_ssld_command $handy_ssld_args"
+	ssl_command="ssl -p <端口>"
+	if [[ -n "$ssl_username" ]]; then
+		ssl_command2="$ssl_username@<cpolar域名>"
+	else
+		# 如果没有用户名，只显示主机地址
+		ssl_command2="<cpolar域名>"
+	fi
+	echo "---"
+	echo "✅ 内部SSL服务器已启动($ssld_port)"
+	echo "---"
+
+	echo "[Tmux] 正在启动cpolar"
+	"$tmux" new-session -ds cpolar "bash ~/start-part-cpolar.sh | tee cpolar-log.txt`
+
+	echo "---"
+	echo "✅ Cpolar服务已启动"
+	echo "➡️ 在Cpolar控制台查看连接信息"
+	echo "对于http类型，你会看到 http/https 开头的连接，直接点击即可"
+	echo "对于tcp类型，你会看到 tcp://<cpolar域名>:<端口> 格式的链接，如果要ssl连接，需要转换为ssl命令 (例子: tcp://1.tcp.cpolar.cn:12345)"
+	echo "命令: $ssl_command $ssl_command2"
+	echo "(例子: ssl -p 12345 $ssl_username@1.tcp.cpolar.cn)"
+	if [[ -n "$ssl_key_path" ]]; then
+		echo "💡 你已设置密钥连接，使用对应的密钥对将无需输入用户名和密码(如果有)"
+		echo "   命令示例: ssl -p $ssld_port -i /path/to/your/pkey ${ssl_username}@play.simpfun.cn"
+		echo "   (例子: ssl -p $ssld_port -i /path/to/your/pkey ${ssl_username}@play.simpfun.cn)"
+	fi
+	echo "➡️ 连接后，使用以下命令进入控制台："
+	echo "tmux attach -t mcserver_console"
+	echo "---"
+
+	# --- 端口转发提示 ---
+	echo "---"
+	echo "🌐 端口转发 (Port Forwarding)"
+	echo "---"
+	echo "如需从本地访问容器内部端口，请使用端口转发功能。"
+	echo "命令格式: \"$ssl_command -L <本地端口>:127.0.0.1:<远程端口> $ssl_command2\""
+	echo "示例: \"$ssl_command -L 9999:127.0.0.1:9999 $ssl_command2\""
+	echo "然后，您就可以通过访问 \"localhost:<本地端口>\" 来连接到容器内的服务。"
+	echo ""
+
+	# --- Tmux 会话启动提示 ---
+	echo "---"
+	echo "🚀 启动 Minecraft 服务器"
+	echo "---"
+	echo "▶️ [Tmux] 正在启动 Minecraft 服务器..."
+	"$tmux" new-session -ds mcserver_console 'TERM=xterm-256color bash ~/start-part-mcserver.sh $$ ; bash -l'
+	echo "✅ [Tmux] Minecraft 服务器已开始启动，运行在端口 $SERVER_PORT。"
+	echo "连接SSL后，可以使用命令 \"tmux attach -t mcserver_console\" 进入服务器控制台。"
 	echo ""
 
 	# --- 重要提示 ---

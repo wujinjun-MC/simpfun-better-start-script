@@ -54,6 +54,14 @@ ACTIVE NOW!!! STAR!!! FORK!!!
 6. 启动服务器
 7. 运行成功后在Simpfun控制台输入help查看帮助
 
+## 远程控制
+
+- remotemode=0: tmate
+- remotemode=1: handy-sshd (SSH) (not recommended)
+- remotemode=2: handy-sshd ("ssh"->"ssl" in this mode) + Cpolar
+	- 使用SSL/SSH协议，但是不直接暴露端口到公网，而是通过Cpolar连接，确保服务器安全
+- remotemode=3: Telnet
+
 ## Other Docs
 
 见 [docs](./docs)
@@ -72,5 +80,5 @@ ACTIVE NOW!!! STAR!!! FORK!!!
 - [ ] [Security]添加 Tailscale 支持，避免直接暴露端口，减小攻击面
 - [ ] [Feature]添加远程控制开关，在运行过程中按需启用远程终端，减小攻击面
 - [x] [Docs]完善 `scripts` 说明
-- [ ] [Security]支持一键"obfuscator" (可使用[Bashfuscator](https://github.com/bashfuscator/bashfuscator)等工具暂时代替)
-- [ ] [Security]添加 [Cpolar](https://www.cpolar.com/) (非frp) 支持，使用tunnel避免直接暴露端口，减小攻击面
+- [ ] [Security](Github actions)一键"obfuscator" (可使用[Bashfuscator](https://github.com/bashfuscator/bashfuscator)等工具暂时代替)
+- [x] [Security]添加 [Cpolar](https://www.cpolar.com/) (非frp) 支持，使用tunnel避免直接暴露端口，减小攻击面

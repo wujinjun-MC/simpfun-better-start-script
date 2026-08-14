@@ -15,21 +15,29 @@ export start_timestamp=$(date +%s)
 chmod -R +x ~/bin/
 chmod -R +x ~/start-part-mcserver.sh
 #chmod -R +x ~/start-part-???d.sh
+chmod -R +x ~/start-part-ssld.sh
+chmod -R +x ~/start-part-cpolar.sh
 export PATH=$PATH:$HOME/bin
 export allocate_perfcent=80
 export maxmem=$(echo "$SERVER_MEMORY*$allocate_perfcent/100" | busybox bc)
 export minmem=$maxmem
 export jvm="-server -Xms${minmem}M -Xmx${maxmem}M -XX:+UseG1GC -Xss512k -XX:ReservedCodeCacheSize=256m -XX:MaxDirectMemorySize=128m -XX:+UseStringDeduplication -XX:+PerfDisableSharedMem -XX:+HeapDumpOnOutOfMemoryError -XX:+UnlockExperimentalVMOptions -XX:+DisableExplicitGC -XX:+AlwaysPreTouch -XX:G1ReservePercent=10 -XX:InitiatingHeapOccupancyPercent=15 -XX:G1MixedGCLiveThresholdPercent=85 -XX:G1RSetUpdatingPauseTimePercent=5 -XX:SurvivorRatio=32 -XX:MaxTenuringThreshold=1 -XX:+EnableDynamicAgentLoading -DIKnowThereAreNoNMSBindingsForv1_21_8ButIWillProceedAnyway -Dtechnicjelle.updatechecker.disabled -Dorg.bukkit.plugin.java.LibraryLoader.centralURL=https://maven-central-asia.storage-download.googleapis.com/maven2 -DLeaf.library-download-repo=https://maven.aliyun.com/repository/public -DLeaf.disable-vanilla-profiler -DLeaf.disable-vanilla-debug-feature -Dgale.log.warning.offline.mode -Dpaper.disableGameRuleLimits=true -Dpaper.preferSparkPlugin=true -Dcom.mojang.eula.agree=true -Dpaper.disableChannelLimit -Dpaper.disableMigrationDelay -Dpaper.maxChatCommandInputSize=4096 -javaagent:mods-java-agent/ChunkGuardAgent.jar -javaagent:mods-java-agent/LazyContainerAgent.jar -Dlazycontainer.verbose=true"
-# 0 tmate 1 ???? 2 Telnet[!TODO]
+# 0 tmate 1 ???? 2 Handy-???d + Cpolar 3 Telnet [!TODO]
 export remotemode=0
 export tmate_retry=5
 #export ???d_port=25495
 #export ???_username=wujinjun
 #export ???_password=mypassword
 #export ???_key_path=~/.???/akeys
+export cpolar_config=~/.config/cpolar/config.yml
+export ssld_port=12345
+export ssl_username=wujinjun
+export ssl_password=mypassword
+export ssl_key_path=~/.ssl/akeys
 export server_jar="server-release.jar"
 export tmate=~/bin/tmate
 export tmux=~/bin/tmux
+export cpolar=~/bin/cpolar
 export fileCheckIfShutdownFromConsole=~/shutdown-mc-server
 export fileCheckIfAutoTaskHour0AutoSleep=~/hour0-auto-sleep
 export cleanBlueMap=0
@@ -59,6 +67,30 @@ exit_actions()
 }
 rm -f "$fileCheckIfShutdownFromConsole"
 rm -f "$fileCheckIfAutoTaskHour0AutoSleep"
+if [ "$remotemode"x = "2"x ]; then
+	if [ "$enable_autotask_hour0_auto_sleep"x = "1"x ]; then
+		echo "✅ [定时任务] \"0点自动关服并等待\" 已启用。"
+		(
+			while true
+			do
+				current_hour=$(date +%H)
+				current_minute=$(date +%M)
+
+				if [ "$current_hour"x = "00"x ] && [ "$current_minute"x = "00"x ]
+				then
+					echo "检测到0点整，正在创建睡眠标志文件并发送停止命令，以保护服务器..."
+					touch "$fileCheckIfAutoTaskHour0AutoSleep"
+					"$tmux" send-keys -t mcserver_console "minecraft:stop" Enter
+					sleep 360
+					rm "$fileCheckIfAutoTaskHour0AutoSleep"
+				fi
+				sleep 60
+			done
+		) &
+	else
+		echo "❌ [定时任务] \"0点自动关服并等待\" 已禁用。"
+	fi
+fi
 if [ "$remotemode"x = "0"x ]
 then
 	echo "[Tmate]正在启动容器s"
@@ -158,6 +190,120 @@ then
 			read -e -p "请输入Linux控制台命令: " linuxcommand
 			eval $linuxcommand
 			break
+		elif [ "$REPLY"x = "help"x ]
+		then
+			echo "stop: 停止MC服务器"
+			echo "attach: 进入MC控制台(此操作无法撤销)"
+			echo "linuxcmd: 在此处执行Linux控制台命令(有安全隐患，如需启用请取消注释部分脚本内容)。不建议执行会花费较长时间的命令，否则可能会无法切出"
+			echo "help: 显示此帮助"
+		else
+			echo "未知命令: ${REPLY} 。输入 \"help\" 查看帮助"
+		fi
+	done
+elif [ "$remotemode"x = "2"x ]
+then
+	echo "[Tmux] 正在启动cpolar_friend_1_ssl"
+	export handy_ssld_command=~/bin/cpolar_friend_1_ssl
+	ssld_args=("--host" "127.0.0.1" "-p" "$ssld_port")
+	if [[ -n "$ssl_username" && -n "$ssl_password" ]]; then
+		ssld_args+=("--user" "$ssl_username:$ssl_password")
+	fi
+	if [[ -n "$ssl_key_path" ]]; then
+		ssld_args+=("--keys" "$ssl_key_path")
+	fi
+	export handy_ssld_args="${ssld_args[@]}"
+	"$tmux" new-session -ds cpolar_friend_1_ssl "bash ~/start-part-ssld.sh | tee ssld-log.txt"
+	ssl_command="ssl -p <端口>"
+	if [[ -n "$ssl_username" ]]; then
+		ssl_command2="$ssl_username@<cpolar域名>"
+	else
+		ssl_command2="<cpolar域名>"
+	fi
+	echo "---"
+	echo "✅ 内部SSL服务器已启动($ssld_port)"
+	echo "---"
+	echo "[Tmux] 正在启动cpolar"
+	"$tmux" new-session -ds cpolar "bash ~/start-part-cpolar.sh | tee cpolar-log.txt`
+	echo "---"
+	echo "✅ Cpolar服务已启动"
+	echo "➡️ 在Cpolar控制台查看连接信息"
+	echo "对于http类型，你会看到 http/https 开头的连接，直接点击即可"
+	echo "对于tcp类型，你会看到 tcp://<cpolar域名>:<端口> 格式的链接，如果要ssl连接，需要转换为ssl命令 (例子: tcp://1.tcp.cpolar.cn:12345)"
+	echo "命令: $ssl_command $ssl_command2"
+	echo "(例子: ssl -p 12345 $ssl_username@1.tcp.cpolar.cn)"
+	if [[ -n "$ssl_key_path" ]]; then
+		echo "💡 你已设置密钥连接，使用对应的密钥对将无需输入用户名和密码(如果有)"
+		echo "   命令示例: ssl -p $ssld_port -i /path/to/your/pkey ${ssl_username}@play.simpfun.cn"
+		echo "   (例子: ssl -p $ssld_port -i /path/to/your/pkey ${ssl_username}@play.simpfun.cn)"
+	fi
+	echo "➡️ 连接后，使用以下命令进入控制台："
+	echo "tmux attach -t mcserver_console"
+	echo "---"
+	echo "---"
+	echo "🌐 端口转发 (Port Forwarding)"
+	echo "---"
+	echo "如需从本地访问容器内部端口，请使用端口转发功能。"
+	echo "命令格式: \"$ssl_command -L <本地端口>:127.0.0.1:<远程端口> $ssl_command2\""
+	echo "示例: \"$ssl_command -L 9999:127.0.0.1:9999 $ssl_command2\""
+	echo "然后，您就可以通过访问 \"localhost:<本地端口>\" 来连接到容器内的服务。"
+	echo ""
+	echo "---"
+	echo "🚀 启动 Minecraft 服务器"
+	echo "---"
+	echo "▶️ [Tmux] 正在启动 Minecraft 服务器..."
+	"$tmux" new-session -ds mcserver_console 'TERM=xterm-256color bash ~/start-part-mcserver.sh $$ ; bash -l'
+	echo "✅ [Tmux] Minecraft 服务器已开始启动，运行在端口 $SERVER_PORT。"
+	echo "连接SSL后，可以使用命令 \"tmux attach -t mcserver_console\" 进入服务器控制台。"
+	echo ""
+	echo "---"
+	echo "Note: 如何保持服务器运行"
+	echo "---"
+	echo "如果你希望在退出脚本后服务器进程仍然运行，"
+	echo "请在MC控制台输入stop停止，在MC服务器重启前快速找到旧的启动脚本进程并结束它。使用以下步骤："
+	echo "1. 使用 \"pgrep -a bash\" 查找带有start-part-mcserver.sh的 bash进程 的 PID。"
+	echo "2. 使用 \"kill -s 9 <PID>\" 强制结束该进程。"
+	echo "这样可以防止新的启动脚本启动后与旧的脚本冲突。"
+	echo ""
+	echo "---"
+	echo "⏳ 日志监控"
+	echo "---"
+	echo "正在监听 \"latest.log\" 文件，判断服务器何时启动成功..."
+	trap exit_actions INT
+	tail -F ~/logs/latest.log | while IFS= read -r line
+	do
+		if [[ "$line" == *"For help, type \"help\""* ]]
+		then
+			done_timestamp=$(date +%s)
+			done_duration=$(( done_timestamp - start_timestamp ))
+			echo "$line"
+			echo "真实启动时间(从按下启动按钮到服务器日志显示\"Done\"): $done_duration"
+			break
+		fi
+	done
+	echo "现在开始, 可以在此控制台输入\"help\"获取帮助"
+	while true
+	do
+		read -p "> " REPLY
+		if [ "$REPLY"x = "stop"x ]
+		then
+			echo 正在停止服务器
+			sleep 1
+			"$tmux" send-keys -t mcserver_console "minecraft:stop"
+			"$tmux" send-keys -t mcserver_console Enter
+			touch "$fileCheckIfShutdownFromConsole"
+			"$tmux" attach -t mcserver_console
+			break
+		elif [ "$REPLY"x = "attach"x ]
+		then
+			echo attach
+			"$tmux" attach -t mcserver_console
+			break
+		# Linux控制台命令。其中使用的eval可能会导致危险行为，所以此功能默认禁用
+		# elif [ "$REPLY"x = "linuxcmd"x ]
+		# then
+		# 	read -e -p "请输入Linux控制台命令: " linuxcommand
+		# 	eval $linuxcommand
+		# 	break
 		elif [ "$REPLY"x = "help"x ]
 		then
 			echo "stop: 停止MC服务器"

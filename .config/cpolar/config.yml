@@ -1,0 +1,30 @@
+authtoken: __更换为你自己的token__
+# 地区
+# 中国: cn,cn_vip,cn_top,cn_vip_top
+# 其他: hk,tw,us,eu,au,ap,zaf
+region: cn
+
+log_level: debug
+#log_format: json
+log: cpolar.log
+
+# 免费版最多可用4个
+tunnels:
+  # 核心: SSL用的端口，和 start.sh 配置中 ssld_port 保持一致
+  ssl:
+    proto: tcp
+    addr: 12345 # 可省略"localhost:"开头
+    #region: cn
+  # 其他示例
+  # Minecraft主端口
+  mcserver:
+    proto: tcp
+    addr: 25565
+    #region: cn
+  # BlueMap (http)
+  bluemap:
+    proto: http # 也可以是 https (如果你有证书的话)
+    addr: 23456
+    #region: cn
+    #crt: /path/to/example.pem
+    #key: /path/to/example.key
