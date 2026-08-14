@@ -21,6 +21,7 @@ tunnels:
     proto: tcp
     addr: 25565
     #region: cn
+  # 对于网页，建议将 proto 设置为 http/https ，白嫖免费https证书
   # BlueMap (http)
   bluemap:
     proto: http # 也可以是 https (如果你有证书的话)
