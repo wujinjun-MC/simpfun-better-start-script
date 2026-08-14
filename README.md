@@ -72,3 +72,4 @@ ACTIVE NOW!!! STAR!!! FORK!!!
 - [ ] 添加 Tailscale 支持，避免直接暴露端口，减小攻击面
 - [ ] 添加 SSH/Tmate/Telnet 开关，按需启用远程终端，减小攻击面 (避免扫端口等安全风险)
 - [ ] 完善 `scripts`说明
+- [ ] [Security]支持一键"obfuscator" (可使用[Bashfuscator](https://github.com/bashfuscator/bashfuscator)等工具暂时代替)

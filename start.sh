@@ -77,12 +77,13 @@ export jvm="-server -Xms${minmem}M -Xmx${maxmem}M -XX:+UseG1GC -Xss384k -XX:Rese
 		### https://www.leafmc.one/en/docs/config/jvm-flags
 	## 备用JVM参数，除了内存信息外什么都不添加，用于临时救急
 # export jvm="-Xms${minmem}M -Xmx${maxmem}M"
-# SSH设置
-	## SSH(远程终端)模式
+# 远程控制设置
+	## 远程控制方式
+		### 设置为-1则关闭此功能
 		### 设置为0使用Tmate, 在控制台输出访问ssh命令和web链接, 用于访问容器Shell和MC服务器控制台Shell
 		### 设置为1使用Handy-sshd, 需要一个独立端口用于sshd, MC控制台在tmux中, 登录ssh后执行 "tmux attach" 进入控制台
 		### [!TODO] 设置为2使用Telnet, 需要一个独立端口用于Telnet, MC控制台在tmux中, 登录ssh后执行 "tmux attach" 进入控制台
-export sshmode=1
+export remotemode=-1
 	## SSH模式为1时，是否开启 用户名和密码登录 (Deprecated: Auto detect)
 		### ssh_use_user_password=1
 	## SSH模式为1时，是否开启 密钥登录 (Deprecated: Auto detect)
@@ -158,8 +159,39 @@ exit_actions()
 rm -f "$fileCheckIfShutdownFromConsole"
 rm -f "$fileCheckIfAutoTaskHour0AutoSleep"
 
-if [ "$sshmode"x = "0"x ]
+if [ "$remotemode"x = "-1"x ]
 then
+	TERM=xterm-256color bash ~/start-part-mcserver.sh $$
+	while true ; do sleep 999999 ; done
+fi
+
+if [ "$remotemode"x = "0"x ]
+then
+    # 自动任务-0点自动关服并等待
+    if [ "$enable_autotask_hour0_auto_sleep"x = "1"x ]
+    then
+        echo "✅ [定时任务] \"0点自动关服并等待\" 已启用。"
+        (
+            while true
+            do
+                current_hour=$(date +%H)
+                current_minute=$(date +%M)
+
+                if [ "$current_hour"x = "00"x ] && [ "$current_minute"x = "00"x ]
+                then
+                    echo "检测到0点整，正在创建睡眠标志文件并发送停止命令，以保护服务器..."
+                    touch "$fileCheckIfAutoTaskHour0AutoSleep"
+                    "$tmux" send-keys -t mcserver_console "minecraft:stop" Enter
+					# 360秒后也会自动移除睡眠标志文件，如果没有正确触发睡眠，手动stop时不会进入睡眠
+					sleep 360
+					rm "$fileCheckIfAutoTaskHour0AutoSleep"
+                fi
+                sleep 60
+            done
+        ) &
+    else
+        echo "❌ [定时任务] \"0点自动关服并等待\" 已禁用。"
+    fi
 	echo "[Tmate]正在启动容器Shell"
 	numTmateTrials=1 # 重试次数计数器
 	fail1=0
@@ -270,7 +302,7 @@ then
 			echo "未知命令: ${REPLY} 。输入 \"help\" 查看帮助"
 		fi
 	done
-elif [ "$sshmode"x = "1"x ]
+elif [ "$remotemode"x = "1"x ]
 then
     # 自动任务-0点自动关服并等待
     if [ "$enable_autotask_hour0_auto_sleep"x = "1"x ]
