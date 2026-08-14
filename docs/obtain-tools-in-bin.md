@@ -63,3 +63,4 @@ You can find some "portable" (statically linked) binary files, including those n
 在以下列表中可以找到一些"便携的"(静态编译的)二进制文件，包括本项目没有的:
 
 - [perryflynn/static-binaries](https://github.com/perryflynn/static-binaries) ([Download](https://files.serverless.industries/bin/)): busybox, curl, dig+nsupdate, htop, iperf2, iperf3, jq, rsync/xxHash, smartctl, OpenSSH, tcpdump/libpcap
+- [andrew-d/static-binaries](https://github.com/andrew-d/static-binaries): ag (the_silver_searcher), binutils, file, ht, nano, nmap, p0f v3, pv (Pipe Viewer), python, socat, strace, tcpdump, yasm
