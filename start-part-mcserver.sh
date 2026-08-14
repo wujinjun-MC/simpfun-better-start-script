@@ -7,6 +7,7 @@ from_pid=$1
 # openjdk17="/usr/bin/jdk/jdk-17.0.6/bin/java"
 # openjdk19="/usr/bin/jdk/jdk-19.0.2/bin/java"
 # openjdk21="/usr/bin/jdk/jdk-21.0.2/bin/java"
+openjdk25="/usr/bin/jdk/jdk-25.0.2/bin/java"
 
 # 这些参数已经在start.sh设置为环境变量，这个脚本将使用环境变量的值
 # maxmem=$((${SERVER_MEMORY} - 1500))
@@ -27,7 +28,9 @@ exit_actions()
 while true
 do
 	trap '' INT # 防止 Ctrl-C 意外停止服务器
-	${openjdk21} $jvm -jar "$server_jar"
+	# 核心启动命令
+	## 默认使用 openjdk25 ，如果正在启动旧版本服务端，需要改为 openjdk21, openjdk8 等
+	${openjdk25} $jvm -jar "$server_jar"
 	trap exit_actions INT # 恢复 Ctrl-C 功能
 	if [ -f "$fileCheckIfShutdownFromConsole" ]
 	then
