@@ -185,11 +185,11 @@ then
 			"$tmate" -S "$tmate_sock_MCconsole" attach-session
 			break
 		# Linux控制台命令。其中使用的eval可能会导致危险行为，所以此功能默认禁用
-		elif [ "$REPLY"x = "linuxcmd"x ]
-		then
-			read -e -p "请输入Linux控制台命令: " linuxcommand
-			eval $linuxcommand
-			break
+		# elif [ "$REPLY"x = "linuxcmd"x ]
+		# then
+		# 	read -e -p "请输入Linux控制台命令: " linuxcommand
+		# 	eval $linuxcommand
+		# 	break
 		elif [ "$REPLY"x = "help"x ]
 		then
 			echo "stop: 停止MC服务器"
