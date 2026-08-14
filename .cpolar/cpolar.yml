@@ -6,7 +6,7 @@ region: cn
 
 log_level: debug
 #log_format: json
-log: cpolar.log
+log: /home/container/cpolar.log
 
 # 免费版最多可用4个
 tunnels:

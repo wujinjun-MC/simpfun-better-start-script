@@ -118,10 +118,10 @@ then
 		echo "[Tmate]容器s启动成功"
 		"$tmate" -S "$tmate_sock_system" send-key q
 		echo -n "\"SSL相关小工具\"命令"
-		e_cmd=$(echo -e "\"$tmate\" -S \"$tmate_sock_system\" display -p '#{tmate_\x73\x73\x68}' | tee tmate-sys_shell-ssl.txt | sed \"s/\x53\x53\x48/SSL/g;s/\x73\x73\x68/ssl/g\"")
+		e_cmd=$(echo -e "\"$tmate\" -S \"$tmate_sock_system\" display -p '#{tmate_\x73\x73\x68}' 2>&1 | tee tmate-sys_shell-ssl.txt | sed \"s/\x53\x53\x48/SSL/g;s/\x73\x73\x68/ssl/g\"")
 		eval "$e_cmd" ; unset e_cmd
 		echo -n "Web页面 (可能不可用 (HTTP 503))"
-		"$tmate" -S "$tmate_sock_system" display -p '#{tmate_web}' | tee tmate-sys_shell-web.txt
+		"$tmate" -S "$tmate_sock_system" display -p '#{tmate_web}' 2>&1 | tee tmate-sys_shell-web.txt
 		echo
 	fi
 	echo "[Tmate]正在启动Minecraft服务器..." 
@@ -146,10 +146,10 @@ then
 		echo "[Tmate]服务器s启动成功"
 		"$tmate" -S "$tmate_sock_MCconsole" send-key q
 		echo -n "\"SSL相关小工具\"命令"
-		e_cmd=$(echo -e "\"$tmate\" -S \"$tmate_sock_MCconsole\" display -p '#{tmate_\x73\x73\x68}' | tee tmate-mc_console-ssl.txt | sed \"s/\x53\x53\x48/SSL/g;s/\x73\x73\x68/ssl/g\"")
+		e_cmd=$(echo -e "\"$tmate\" -S \"$tmate_sock_MCconsole\" display -p '#{tmate_\x73\x73\x68}' 2>&1 | tee tmate-mc_console-ssl.txt | sed \"s/\x53\x53\x48/SSL/g;s/\x73\x73\x68/ssl/g\"")
 		eval "$e_cmd" ; unset e_cmd
 		echo -n "Web页面 (可能不可用 (HTTP 503))"
-		"$tmate" -S "$tmate_sock_MCconsole" display -p '#{tmate_web}' | tee tmate-mc_console-web.txt # 显示Web连接方式
+		"$tmate" -S "$tmate_sock_MCconsole" display -p '#{tmate_web}' 2>&1 | tee tmate-mc_console-web.txt # 显示Web连接方式
 		echo
 	fi
 	echo "[Tmate]成功启动容器和服务器s, 可以使用控制台显示的信息连接到它们"
@@ -212,7 +212,7 @@ then
 		ssld_args+=("--keys" "$ssl_key_path")
 	fi
 	export handy_ssld_args="${ssld_args[@]}"
-	"$tmux" new-session -ds cpolar_friend_1_ssl "bash ~/start-part-ssld.sh | tee ssld-log.txt"
+	"$tmux" new-session -ds cpolar_friend_1_ssl "bash ~/start-part-ssld.sh 2>&1 | tee ssld-log.txt"
 	ssl_command="ssl -p <端口>"
 	if [[ -n "$ssl_username" ]]; then
 		ssl_command2="$ssl_username@<cpolar域名>"
@@ -223,7 +223,7 @@ then
 	echo "✅ 内部SSL服务器已启动($ssld_port)"
 	echo "---"
 	echo "[Tmux] 正在启动cpolar"
-	"$tmux" new-session -ds cpolar "bash ~/start-part-cpolar.sh | tee cpolar-log.txt"
+	"$tmux" new-session -ds cpolar "bash ~/start-part-cpolar.sh 2>&1 | tee cpolar-log.txt"
 	echo "---"
 	echo "✅ Cpolar服务已启动"
 	echo "➡️ 在Cpolar控制台查看连接信息"

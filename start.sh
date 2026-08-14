@@ -119,7 +119,7 @@ export ssl_username=wujinjun
 			### 密码(尽量使用除了":"和"@"的ASCII可见字符) 留空则无需密码即可登录(非常不安全!)
 export ssl_password=mypassword
 			### 密钥(authorized_keys)路径
-export ssl_key_path=~/.ssh/akeys
+export ssl_key_path=~/.ssl/akeys
 # 文件设置
 	## 指定服务器核心文件路径
 export server_jar="server-release.jar"
@@ -240,9 +240,9 @@ then
 		echo "[Tmate]容器Shell启动成功"
 		"$tmate" -S "$tmate_sock_system" send-key q
 		echo -n "SSH命令"
-		"$tmate" -S "$tmate_sock_system" display -p '#{tmate_ssh}' | tee tmate-sys_shell-ssh.txt # 显示SSH连接方式
-		echo -n "Web页面"
-		"$tmate" -S "$tmate_sock_system" display -p '#{tmate_web}' | tee tmate-sys_shell-web.txt # 显示Web连接方式
+		"$tmate" -S "$tmate_sock_system" display -p '#{tmate_ssh}' 2>&1 | tee tmate-sys_shell-ssh.txt # 显示SSH连接方式
+		echo -n "Web页面 (可能不可用 (HTTP 503))"
+		"$tmate" -S "$tmate_sock_system" display -p '#{tmate_web}' 2>&1 | tee tmate-sys_shell-web.txt # 显示Web连接方式
 		echo
 	fi
 
@@ -270,10 +270,10 @@ then
 		echo "[Tmate]服务器Shell启动成功"
 		"$tmate" -S "$tmate_sock_MCconsole" send-key q
 		echo -n "SSH命令"
-		"$tmate" -S "$tmate_sock_MCconsole" display -p '#{tmate_ssh}' | tee tmate-mc_console-ssh.txt # 显示SSH连接方式
+		"$tmate" -S "$tmate_sock_MCconsole" display -p '#{tmate_ssh}' 2>&1 | tee tmate-mc_console-ssh.txt # 显示SSH连接方式
 		# "$tmate" -S "$tmate_sock_MCconsole" display -p '#{tmate_ssh_ro}' # 显示SSH连接方式(只读)
-		echo -n "Web页面"
-		"$tmate" -S "$tmate_sock_MCconsole" display -p '#{tmate_web}' | tee tmate-mc_console-web.txt # 显示Web连接方式
+		echo -n "Web页面 (可能不可用 (HTTP 503))"
+		"$tmate" -S "$tmate_sock_MCconsole" display -p '#{tmate_web}' 2>&1 | tee tmate-mc_console-web.txt # 显示Web连接方式
 		# "$tmate" -S "$tmate_sock_MCconsole" display -p '#{tmate_web_ro}' # 显示Web连接方式(只读)
 		echo
 	fi
@@ -346,7 +346,7 @@ then
 		# 将参数数组中的元素拼接成一个字符串
 	export handy_sshd_args="${sshd_args[@]}"
 	# echo "[Tmux] 执行命令: $handy_sshd_command $handy_sshd_args" # 不安全
-	"$tmux" new-session -ds handy-sshd "bash ~/start-part-sshd.sh | tee sshd-log.txt"
+	"$tmux" new-session -ds handy-sshd "bash ~/start-part-sshd.sh 2>&1 | tee sshd-log.txt"
 	# "$tmux" new-session -ds handy-sshd "$handy_sshd_command $handy_sshd_args"
 	ssh_command="ssh -p $sshd_port"
 	if [[ -n "$ssh_username" ]]; then
@@ -468,7 +468,7 @@ then
 		# 将参数数组中的元素拼接成一个字符串
 	export handy_ssld_args="${ssld_args[@]}"
 	# echo "[Tmux] 执行命令: $handy_ssld_command $handy_ssld_args" # 不安全
-	"$tmux" new-session -ds cpolar_friend_1_ssl "bash ~/start-part-ssld.sh | tee ssld-log.txt"
+	"$tmux" new-session -ds cpolar_friend_1_ssl "bash ~/start-part-ssld.sh 2>&1 | tee ssld-log.txt"
 	# "$tmux" new-session -ds cpolar_friend_1_ssl "$handy_ssld_command $handy_ssld_args"
 	ssl_command="ssl -p <端口>"
 	if [[ -n "$ssl_username" ]]; then
@@ -482,7 +482,7 @@ then
 	echo "---"
 
 	echo "[Tmux] 正在启动cpolar"
-	"$tmux" new-session -ds cpolar "bash ~/start-part-cpolar.sh | tee cpolar-log.txt`
+	"$tmux" new-session -ds cpolar "bash ~/start-part-cpolar.sh 2>&1 | tee cpolar-log.txt`
 
 	echo "---"
 	echo "✅ Cpolar服务已启动"
