@@ -20,7 +20,7 @@ export maxmem=$(echo "$SERVER_MEMORY*$allocate_perfcent/100" | busybox bc)
 export minmem=$maxmem
 export jvm="-server -Xms${minmem}M -Xmx${maxmem}M -XX:+UseG1GC -Xss512k -XX:ReservedCodeCacheSize=256m -XX:MaxDirectMemorySize=128m -XX:+UseStringDeduplication -XX:+PerfDisableSharedMem -XX:+HeapDumpOnOutOfMemoryError -XX:+UnlockExperimentalVMOptions -XX:+DisableExplicitGC -XX:+AlwaysPreTouch -XX:G1ReservePercent=10 -XX:InitiatingHeapOccupancyPercent=15 -XX:G1MixedGCLiveThresholdPercent=85 -XX:G1RSetUpdatingPauseTimePercent=5 -XX:SurvivorRatio=32 -XX:MaxTenuringThreshold=1 -XX:+EnableDynamicAgentLoading -DIKnowThereAreNoNMSBindingsForv1_21_8ButIWillProceedAnyway -Dtechnicjelle.updatechecker.disabled -Dorg.bukkit.plugin.java.LibraryLoader.centralURL=https://maven-central-asia.storage-download.googleapis.com/maven2 -DLeaf.library-download-repo=https://maven.aliyun.com/repository/public -DLeaf.disable-vanilla-profiler -DLeaf.disable-vanilla-debug-feature -Dgale.log.warning.offline.mode -Dpaper.disableGameRuleLimits=true -Dpaper.preferSparkPlugin=true -Dcom.mojang.eula.agree=true -Dpaper.disableChannelLimit -Dpaper.disableMigrationDelay -Dpaper.maxChatCommandInputSize=4096 -javaagent:mods-java-agent/ChunkGuardAgent.jar -javaagent:mods-java-agent/LazyContainerAgent.jar -Dlazycontainer.verbose=true"
 # 0 tmate 1 ???? 2 Telnet[!TODO]
-export remotemode=-1
+export remotemode=0
 export tmate_retry=5
 #export ???d_port=25495
 #export ???_username=wujinjun
@@ -84,9 +84,12 @@ then
 	if [ "$fail1"x = "0"x ]
 	then
 		echo "[Tmate]容器s启动成功"
-		"$tmate" -S "$tmate_sock_system" send-key q 
-		"$tmate" -S "$tmate_sock_system" display -p '#{tmate_ssl}' | tee tmate-sys_shell-ssl.txt # 显示"SSL相关小工具"连接方式
-		"$tmate" -S "$tmate_sock_system" display -p '#{tmate_web}' | tee tmate-sys_shell-web.txt # 显示Web连接方式
+		"$tmate" -S "$tmate_sock_system" send-key q
+		echo -n "\"SSL相关小工具\"命令"
+		e_cmd=$(echo -e "\"$tmate\" -S \"$tmate_sock_system\" display -p '#{tmate_\x73\x73\x68}' | tee tmate-sys_shell-ssl.txt | sed \"s/\x53\x53\x48/SSL/g;s/\x73\x73\x68/ssl/g\"")
+		eval "$e_cmd" ; unset e_cmd
+		echo -n "Web页面 (可能不可用 (HTTP 503))"
+		"$tmate" -S "$tmate_sock_system" display -p '#{tmate_web}' | tee tmate-sys_shell-web.txt
 		echo
 	fi
 	echo "[Tmate]正在启动Minecraft服务器..." 
@@ -111,9 +114,9 @@ then
 		echo "[Tmate]服务器s启动成功"
 		"$tmate" -S "$tmate_sock_MCconsole" send-key q
 		echo -n "\"SSL相关小工具\"命令"
-		e_cmd=$(echo -e "\"$tmate\" -S \"$tmate_sock_MCconsole\" display -p '#{tmate_ssl}' | tee tmate-mc_console-ssl.txt | sed \"s/\x53\x53\x48/SSL/g;s/\x73\x73\x68/ssl/g\"")
-		eval "$e_cmd"
-		echo -n "Web页面"
+		e_cmd=$(echo -e "\"$tmate\" -S \"$tmate_sock_MCconsole\" display -p '#{tmate_\x73\x73\x68}' | tee tmate-mc_console-ssl.txt | sed \"s/\x53\x53\x48/SSL/g;s/\x73\x73\x68/ssl/g\"")
+		eval "$e_cmd" ; unset e_cmd
+		echo -n "Web页面 (可能不可用 (HTTP 503))"
 		"$tmate" -S "$tmate_sock_MCconsole" display -p '#{tmate_web}' | tee tmate-mc_console-web.txt # 显示Web连接方式
 		echo
 	fi

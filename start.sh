@@ -215,8 +215,10 @@ then
 	if [ "$fail1"x = "0"x ]
 	then
 		echo "[Tmate]容器Shell启动成功"
-		"$tmate" -S "$tmate_sock_system" send-key q 
+		"$tmate" -S "$tmate_sock_system" send-key q
+		echo -n "SSH命令"
 		"$tmate" -S "$tmate_sock_system" display -p '#{tmate_ssh}' | tee tmate-sys_shell-ssh.txt # 显示SSH连接方式
+		echo -n "Web页面"
 		"$tmate" -S "$tmate_sock_system" display -p '#{tmate_web}' | tee tmate-sys_shell-web.txt # 显示Web连接方式
 		echo
 	fi
