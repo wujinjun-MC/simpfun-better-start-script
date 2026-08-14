@@ -14,7 +14,7 @@ fi
 export start_timestamp=$(date +%s)
 chmod -R +x ~/bin/
 chmod -R +x ~/start-part-mcserver.sh
-chmod -R +x ~/start-part-sshd.sh
+#chmod -R +x ~/start-part-???d.sh
 export allocate_perfcent=80
 export maxmem=$(echo "$SERVER_MEMORY*$allocate_perfcent/100" | busybox bc)
 export minmem=$maxmem
