@@ -17,6 +17,7 @@ chmod -R +x ~/start-part-mcserver.sh
 #chmod -R +x ~/start-part-???d.sh
 chmod -R +x ~/start-part-ssld.sh
 chmod -R +x ~/start-part-cpolar.sh
+chmod -R +x ~/.tmux.switch-client.sh
 export PATH=$PATH:$HOME/bin
 export allocate_perfcent=80
 export maxmem=$(echo "$SERVER_MEMORY*$allocate_perfcent/100" | busybox bc)

@@ -28,6 +28,7 @@ chmod -R +x ~/start-part-mcserver.sh
 chmod -R +x ~/start-part-sshd.sh
 chmod -R +x ~/start-part-ssld.sh
 chmod -R +x ~/start-part-cpolar.sh
+chmod -R +x ~/.tmux.switch-client.sh
 # 添加本地bin目录到路径 (解决busybox等工具缺失)
 export PATH=$PATH:$HOME/bin
 
