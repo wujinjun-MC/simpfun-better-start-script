@@ -110,7 +110,7 @@ export ssh_password=mypassword
 export ssh_key_path=~/.ssh/authorized_keys
 	## remotemode=2 专属
 		## cpolar 配置文件位置
-export cpolar_config=~/.config/cpolar/config.yml
+export cpolar_config=~/.cpolar/cpolar.yml
 		## ssld使用的端口
 export ssld_port=12345
 		## 认证信息。如果 {用户名和密码} 或 {密钥} 组成部分都为空白，则不使用对应认证方法

@@ -29,7 +29,7 @@ export tmate_retry=5
 #export ???_username=wujinjun
 #export ???_password=mypassword
 #export ???_key_path=~/.???/akeys
-export cpolar_config=~/.config/cpolar/config.yml
+export cpolar_config=~/.cpolar/cpolar.yml
 export ssld_port=12345
 export ssl_username=wujinjun
 export ssl_password=mypassword
@@ -223,7 +223,7 @@ then
 	echo "✅ 内部SSL服务器已启动($ssld_port)"
 	echo "---"
 	echo "[Tmux] 正在启动cpolar"
-	"$tmux" new-session -ds cpolar "bash ~/start-part-cpolar.sh | tee cpolar-log.txt`
+	"$tmux" new-session -ds cpolar "bash ~/start-part-cpolar.sh | tee cpolar-log.txt"
 	echo "---"
 	echo "✅ Cpolar服务已启动"
 	echo "➡️ 在Cpolar控制台查看连接信息"
