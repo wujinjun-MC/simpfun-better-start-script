@@ -26,6 +26,8 @@ export start_timestamp=$(date +%s)
 chmod -R +x ~/bin/
 chmod -R +x ~/start-part-mcserver.sh
 chmod -R +x ~/start-part-sshd.sh
+# 添加本地bin目录到路径 (解决busybox等工具缺失)
+export PATH=$PATH:$HOME/bin
 
 
 #--------配置区--------
@@ -110,8 +112,6 @@ export tmux=~/bin/tmux
 export fileCheckIfShutdownFromConsole=~/shutdown-mc-server
 	## 指定"自动休眠"标志文件，判断是否为 自动任务-0点自动关服并等待
 export fileCheckIfAutoTaskHour0AutoSleep=~/hour0-auto-sleep
-	## 添加本地bin目录到路径
-export PATH=$PATH:$HOME/bin
 	## 显示环境变量
 		### env
 	## 显示系统信息

@@ -15,6 +15,7 @@ export start_timestamp=$(date +%s)
 chmod -R +x ~/bin/
 chmod -R +x ~/start-part-mcserver.sh
 #chmod -R +x ~/start-part-???d.sh
+export PATH=$PATH:$HOME/bin
 export allocate_perfcent=80
 export maxmem=$(echo "$SERVER_MEMORY*$allocate_perfcent/100" | busybox bc)
 export minmem=$maxmem
@@ -31,7 +32,6 @@ export tmate=~/bin/tmate
 export tmux=~/bin/tmux
 export fileCheckIfShutdownFromConsole=~/shutdown-mc-server
 export fileCheckIfAutoTaskHour0AutoSleep=~/hour0-auto-sleep
-export PATH=$PATH:$HOME/bin
 export cleanBlueMap=0
 export cleanDistantHorizonsSupport=0
 export cleanPaperRemappedPlugins=0
