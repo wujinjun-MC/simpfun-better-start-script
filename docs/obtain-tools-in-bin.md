@@ -50,6 +50,10 @@ perryflynn/static-binaries
 
 perryflynn/static-binaries
 
+## nano
+
+手动构建。查看[完整教程](./manual-build-static/nano.md)。
+
 ## NCurses Disk Usage (ncdu)
 
 Use static binary from [official site](https://dev.yorhel.nl/ncdu)
