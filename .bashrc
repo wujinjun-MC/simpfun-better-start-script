@@ -44,7 +44,7 @@ if [ -x /usr/bin/dircolors ]; then
     alias egrep='egrep --color=auto'
 fi
 
-export PATH=$PATH:$HOME/bin
+export PATH=$PATH:$HOME/bin:$HOME/bin/coreutils
 # export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$HOME/lib:$HOME/usr/lib
 # export LD_LIBRARY_PATH=$HOME/lib/lib/x86_64-linux-gnu/gconv:$HOME/lib/lib/x86_64-linux-gnu:$HOME/lib
 export LD_LIBRARY_PATH=$HOME/lib
