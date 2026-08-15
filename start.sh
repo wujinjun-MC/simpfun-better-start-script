@@ -24,13 +24,11 @@ fi
 export start_timestamp=$(date +%s)
 # 文件权限准备: 为二进制文件和脚本文件添加执行权限(+x)
 chmod -R +x ~/bin/
-chmod -R +x ~/start-part-mcserver.sh
-chmod -R +x ~/start-part-sshd.sh
-chmod -R +x ~/start-part-ssld.sh
-chmod -R +x ~/start-part-cpolar.sh
+chmod -R +x ~/start-part-*.sh
 chmod -R +x ~/.tmux.switch-client.sh
+chmod -R +x ~/scripts/*.sh
 # 添加本地bin目录到路径 (解决busybox等工具缺失)
-export PATH=$PATH:$HOME/bin
+export PATH=$PATH:$HOME/bin:$HOME/bin/coreutils
 
 
 #--------配置区--------
@@ -139,39 +137,19 @@ export fileCheckIfAutoTaskHour0AutoSleep=~/hour0-auto-sleep
 	## 显示系统信息
 		### uname -a
 	## 关服时，是否清除垃圾，避免因超出磁盘空间而扣积分(默认关闭)
-		### 清除BlueMap地图缓存
-export cleanBlueMap=0
-		### 清除DHSupport压缩区块缓存
-export cleanDistantHorizonsSupport=0
-		### 清除paper重映射插件缓存
-export cleanPaperRemappedPlugins=0
+		### 在 ~/scripts/cache-cleanup.sh 进行配置
 # 自动任务
-	## 是否启用 0点自动关服并等待 - 在0点时关闭服务器，等待一定时间(默认3600秒/60分钟)再开服，用于防止服务器损坏，因为如果积分不足，实例在此时会被强制停止。(暂时仅支持使用Handy-sshd的模式)
-export enable_autotask_hour0_auto_sleep=1
+	## 是否启用 0点自动关服并等待 - 在0点时关闭服务器，等待一定时间(默认3600秒/60分钟)再开服，用于防止服务器损坏，因为如果积分不足，实例在此时会被强制停止。
+		### 暂时仅支持 remotemode=1,2
+		### 核心为判断 ~/autotask_hour0_auto_sleep 是否存在 (配置中设定为1，会自动创建此文件; 设定为0，不进行任何处理; 设定为-1，会自动删除此文件)
+export autotask_hour0_auto_sleep=1
 # 结束动作设置
 	## 脚本结束动作，收到SIGINT结束时执行清理
 exit_actions()
 {
 	echo
 	echo "Minecraft server stopped, exiting..."
-	## 清除BlueMap地图缓存
-	if [ "$cleanBlueMap"x = "1"x ]
-	then
-		echo "正在清除BlueMap地图缓存"
-		rm -rf ~/bluemap/web/maps/*
-	fi
-	## 清除DHSupport压缩区块缓存
-	if [ "$cleanDistantHorizonsSupport"x = "1"x ]
-	then
-		echo "正在清除DHSupport压缩区块缓存"
-		rm -f ~/plugins/DHSupport/data.sqlite
-	fi
-	## 清除paper重映射插件缓存
-	if [ "$cleanPaperRemappedPlugins"x = "1"x ]
-	then
-		echo "正在清除paper重映射插件缓存"
-		rm -rf ~/plugins/.paper-remapped/*
-	fi
+	bash ~/scripts/cache-cleanup.sh
 	exit $1
 }
 
@@ -183,29 +161,8 @@ rm -f "$fileCheckIfAutoTaskHour0AutoSleep"
 
 # 自动任务-0点自动关服并等待
 if [ "$remotemode"x = "1"x ] || [ "$remotemode"x = "2"x ]; then
-	if [ "$enable_autotask_hour0_auto_sleep"x = "1"x ]; then
-		echo "✅ [定时任务] \"0点自动关服并等待\" 已启用。"
-		(
-			while true
-			do
-				current_hour=$(date +%H)
-				current_minute=$(date +%M)
-
-				if [ "$current_hour"x = "00"x ] && [ "$current_minute"x = "00"x ]
-				then
-					echo "检测到0点整，正在创建睡眠标志文件并发送停止命令，以保护服务器..."
-					touch "$fileCheckIfAutoTaskHour0AutoSleep"
-					"$tmux" send-keys -t mcserver_console "minecraft:stop" Enter
-					# 360秒后也会自动移除睡眠标志文件，如果没有正确触发睡眠，手动stop时不会进入睡眠
-					sleep 360
-					rm "$fileCheckIfAutoTaskHour0AutoSleep"
-				fi
-				sleep 60
-			done
-		) &
-	else
-		echo "❌ [定时任务] \"0点自动关服并等待\" 已禁用。"
-	fi
+	echo "✅ [定时任务] 启动 \"0点自动关服并等待\" 。"
+	bash ~/scripts/autotask_hour0_auto_sleep-tmux.sh &
 fi
 
 if [ "$remotemode"x = "-1"x ]

@@ -13,12 +13,10 @@ then
 fi
 export start_timestamp=$(date +%s)
 chmod -R +x ~/bin/
-chmod -R +x ~/start-part-mcserver.sh
-#chmod -R +x ~/start-part-???d.sh
-chmod -R +x ~/start-part-ssld.sh
-chmod -R +x ~/start-part-cpolar.sh
+chmod -R +x ~/start-part-*.sh
 chmod -R +x ~/.tmux.switch-client.sh
-export PATH=$PATH:$HOME/bin
+chmod -R +x ~/scripts/*.sh
+export PATH=$PATH:$HOME/bin:$HOME/bin/coreutils
 export allocate_perfcent=80
 export maxmem=$(echo "$SERVER_MEMORY*$allocate_perfcent/100" | busybox bc)
 export minmem=$maxmem
@@ -41,56 +39,19 @@ export tmux=~/bin/tmux
 export cpolar=~/bin/cpolar
 export fileCheckIfShutdownFromConsole=~/shutdown-mc-server
 export fileCheckIfAutoTaskHour0AutoSleep=~/hour0-auto-sleep
-export cleanBlueMap=0
-export cleanDistantHorizonsSupport=0
-export cleanPaperRemappedPlugins=0
-export enable_autotask_hour0_auto_sleep=1
+export autotask_hour0_auto_sleep=1
 exit_actions()
 {
 	echo
 	echo "Minecraft server stopped, exiting..."
-	if [ "$cleanBlueMap"x = "1"x ]
-	then
-		echo "正在清除BlueMap地图缓存"
-		rm -rf ~/bluemap/web/maps/*
-	fi
-	if [ "$cleanDistantHorizonsSupport"x = "1"x ]
-	then
-		echo "正在清除DHSupport压缩区块缓存"
-		rm -f ~/plugins/DHSupport/data.sqlite
-	fi
-	if [ "$cleanPaperRemappedPlugins"x = "1"x ]
-	then
-		echo "正在清除paper重映射插件缓存"
-		rm -rf ~/plugins/.paper-remapped/*
-	fi
+	bash ~/scripts/cache-cleanup.sh
 	exit $1
 }
 rm -f "$fileCheckIfShutdownFromConsole"
 rm -f "$fileCheckIfAutoTaskHour0AutoSleep"
 if [ "$remotemode"x = "2"x ]; then
-	if [ "$enable_autotask_hour0_auto_sleep"x = "1"x ]; then
-		echo "✅ [定时任务] \"0点自动关服并等待\" 已启用。"
-		(
-			while true
-			do
-				current_hour=$(date +%H)
-				current_minute=$(date +%M)
-
-				if [ "$current_hour"x = "00"x ] && [ "$current_minute"x = "00"x ]
-				then
-					echo "检测到0点整，正在创建睡眠标志文件并发送停止命令，以保护服务器..."
-					touch "$fileCheckIfAutoTaskHour0AutoSleep"
-					"$tmux" send-keys -t mcserver_console "minecraft:stop" Enter
-					sleep 360
-					rm "$fileCheckIfAutoTaskHour0AutoSleep"
-				fi
-				sleep 60
-			done
-		) &
-	else
-		echo "❌ [定时任务] \"0点自动关服并等待\" 已禁用。"
-	fi
+	echo "✅ [定时任务] 启动 \"0点自动关服并等待\" 。"
+	bash ~/scripts/autotask_hour0_auto_sleep-tmux.sh &
 fi
 if [ "$remotemode"x = "0"x ]
 then

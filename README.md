@@ -62,6 +62,12 @@ ACTIVE NOW!!! STAR!!! FORK!!!
 	- 使用SSL/SSH协议，但是不直接暴露端口到公网，而是通过Cpolar连接，确保服务器安全
 - remotemode=3: Telnet
 
+## 重载启动脚本
+
+- 创建文件 `restart-<脚本名称>`
+	- start.sh: 脚本将重新执行。重新执行前，所有子进程将被清除 (例如Minecraft服务器、Cpolar) [!TODO]
+	- start-part-*.sh: 脚本将重新执行
+
 ## Other Docs
 
 见 [docs](./docs)
