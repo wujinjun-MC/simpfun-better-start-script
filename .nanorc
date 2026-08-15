@@ -1,1 +1,13 @@
-.aio/.xdg/.config/nano/nanorc
+set linenumbers
+set autoindent
+set showcursor
+set softwrap
+set tabsize 4
+set tabstospaces
+set smarthome
+set historylog
+set nonewlines
+set quickblank
+set emptyline
+set zero
+set positionlog

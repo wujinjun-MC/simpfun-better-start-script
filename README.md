@@ -6,12 +6,14 @@ ACTIVE NOW!!! STAR!!! FORK!!!
 
 ## 为什么选择此项目
 
-1. 可以直接连接服务器控制台，获得和本地电脑启动Minecraft服务器一样的操作体验，包括命令历史记录、快捷键
-2. 流量消耗更少，方便在低带宽状态下更好管理服务器
+1. 可以直接连接服务器控制台，获得和本地电脑启动Minecraft服务器一样的操作体验，可以使用↑↓调取命令历史记录，用TAB自动补全
+2. 网页端需要加载大量前端资源，占用CPU、GPU和内存，降低游戏帧率。此项目的远程控制方法流量消耗更少，方便在低带宽状态下更好管理服务器
 3. 快速配置JVM参数，优化服务器性能
 4. 自动重启服务器，防止服务器因异常停止导致存档丢失
 5. 自动清理垃圾，防止过度消耗积分和占用宝贵的免费资源
 6. 可通过Tailscale (即将到来) 远程调试，避免直接暴露端口，减小攻击面
+7. **(NOT VIOLATING TOS)** 方便多管理员情况下的团队协作，例如排除故障、动态测试JVM参数性能
+	- 必须使用...方法获得IP白名单后才能登录到网页控制台，但""启动速度慢，包含开屏广告(跳过按钮屏占比仅<2%)，严重影响用户体验; 多管理员环境下，效率更低，需要使用屏幕共享等方式控制，产生严重安全漏洞 (获得完整手机/电脑操控权限，服主面临财产、隐私安全威胁)
 
 更多功能查看 [Features](#features)
 
@@ -21,7 +23,9 @@ ACTIVE NOW!!! STAR!!! FORK!!!
 
 ~~为避免您的账号封禁，请立即删除SSH相关代码和滥用功能~~
 
-既然不能用SSH，用 `Tmate` 和 `Telnet` (TODO) 就好了
+目前仍然未知此类用户是否使用了本项目，但是在 start.sh 的 "用户须知" 内已经提醒用户不得用于违规用途，并且用户必须关闭提示信息才能使用 (视为同意相关声明)，用户行为与本项目无关。
+
+对于正常用户: SSH直接使用确实有风险 (暴露了"危险"服务到公网，黑客可能破解并控制实例; 被""扫描到然后自动扣帽子，一刀切立即封禁)。如果确实担心风险，或者正在用于重要项目 (例如~~保证商业服稳定盈利?~~ (Warning: At your own risk. You are breaking Simpfun's ToS and/or Mojang's EULA!) 或 持续建设高难度的生电工程) ，用 `Tmate` 、 `Cpolar+ssld` 和 `Telnet` (TODO) 就好了
 
 ## Features
 
@@ -44,9 +48,9 @@ ACTIVE NOW!!! STAR!!! FORK!!!
 
 ## 使用教程
 
-1. git clone 或下载仓库(记得点点star)
+1. git clone 或 从[Releases](https://github.com/wujinjun-MC/simpfun-better-start-script/releases) 下载 (记得点点star)
 2. 将文件通过SFTP放到根目录
-3. 给予 /bin/* start.sh start-part-mcserver.sh 执行权限(chmod -R 755 文件名)
+3. 给予 /bin/* start.sh start-part-mcserver.sh 执行权限(`chmod -R 755 <文件名>` 或 通过SFTP给文件添加 "x" 权限)
 4. 在start.sh的配置区完成配置
 <!-- 5. 如果使用Dropbear模式，需要配置密钥。
 	1. 在自己的电脑上生成公私钥，然后创建/.ssh/文件夹，创建/.ssh/authorized_keys，将公钥添加到此文件
