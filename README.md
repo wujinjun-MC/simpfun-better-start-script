@@ -88,3 +88,7 @@ ACTIVE NOW!!! STAR!!! FORK!!!
 - [x] [Docs]完善 `scripts` 说明
 - [ ] [Security](Github actions)一键"obfuscator" (可使用[Bashfuscator](https://github.com/bashfuscator/bashfuscator)等工具暂时代替)
 - [x] [Security]添加 [Cpolar](https://www.cpolar.com/) (非frp) 支持，使用tunnel避免直接暴露端口，减小攻击面
+
+## Copyright & License
+
+Copyright © 2026 wujinjun-MC, released under GPL 3.0. (See [License](./LICENSE))

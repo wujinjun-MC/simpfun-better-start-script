@@ -13,6 +13,7 @@ export show_start_message_and_exit=1
 if [ "$show_start_message_and_exit"x = "1"x ]
 then
 	echo "欢迎使用 更好的简幻欢启动脚本 ，作者 wujinjun-MC (https://github.com/wujinjun-MC)"
+	echo "Copyright © 2026 wujinjun-MC, released under GPL 3.0."
 	echo "在开始使用前，请使用编辑器打开start.sh，在下方配置区中进行配置"
 	echo "免责声明: 使用此项目时，用户需自行检查脚本和配置是否正确，自行承担使用风险，不得将此项目用于违反简幻欢(Simpfun)用户条款、中华人名共和国及当地法律法规的行为。wujinjun-MC 不为使用者承担任何责任"
 	echo "请遵守开源协议，并保证不将此项目用于销售和其他违规用途。该项目不会对任何人收费。如果您通过任何渠道购买了此项目或其中的一部分，请要求退款"
