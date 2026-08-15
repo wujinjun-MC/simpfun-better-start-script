@@ -22,6 +22,9 @@ then
 fi
 # 获取开始启动的时间戳
 export start_timestamp=$(date +%s)
+# 将脚本运行时的环境变量和uid/gid (id) 输出到文件 (调试用) (默认禁用)
+#env > ~/.current_env
+#id > ~/.current_id
 # 文件权限准备: 为二进制文件和脚本文件添加执行权限(+x)
 chmod -R +x ~/bin/
 chmod -R +x ~/start-part-*.sh

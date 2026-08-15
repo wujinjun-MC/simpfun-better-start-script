@@ -12,6 +12,8 @@ then
 	exit
 fi
 export start_timestamp=$(date +%s)
+#env > ~/.current_env
+#id > ~/.current_id
 chmod -R +x ~/bin/
 chmod -R +x ~/start-part-*.sh
 chmod -R +x ~/.tmux.switch-client.sh
