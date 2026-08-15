@@ -2,7 +2,12 @@
 1. 安装rclone后， "rclone config" 创建配置连接到直连SSH (假设 "server-direct")。不要使用SFTP地址，否则容易IO卡顿、文件损坏
 2. 
 Windows:
-rclone mount -v --vfs-cache-mode full --human-readable --cache-dir <缓存位置> --dir-cache-time 10s --file-perms 777 --network-mode --no-seek server-direct: Z:
+rclone mount -v --vfs-cache-mode full --human-readable --cache-dir <缓存位置> --dir-cache-time 10s --file-perms 777 --network-mode --no-seek --volname 1a1s-sftp-prefer-ul_and_dl 1a1s-sftp: Z:
+rclone mount -v --vfs-cache-mode full --human-readable --cache-dir <缓存位置> --dir-cache-time 10s --file-perms 777 --network-mode --volname 1a1s-ssh-prefer-ul 1a1s-ssh:/home/container Z:
 ("Z:" 可以换成未使用的其他盘符)
 Linux:
-rclone mount -v --vfs-cache-mode full --human-readable --cache-dir <缓存位置> --dir-cache-time 10s --file-perms 777 --no-seek server-direct: <路径>
+rclone mount -v --vfs-cache-mode full --human-readable --cache-dir <缓存位置> --dir-cache-time 10s --file-perms 777 --no-seek 1a1s-sftp: <路径>
+rclone mount -v --vfs-cache-mode full --human-readable --cache-dir <缓存位置> --dir-cache-time 10s --file-perms 777 1a1s-ssh:/home/container <路径>
+
+如果使用simpfun提供的SFTP，使用 `--no-seek` 防止低效率随机读写 (纯SFTP一般不支持随机读写)
+如果使用sshd/ssld连接方式，可以去掉 `--no-seek` ，在大文件情况下减少实例的上传流量消耗
