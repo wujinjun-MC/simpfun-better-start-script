@@ -28,6 +28,14 @@ git clone 或 [releases](https://github.com/aristocratos/btop/releases) 下载�
 
 ## Busybox
 
+## Coreutils
+
+手动构建。查看[完整教程](./manual-build-static/coreutils.md)。
+
+## curl
+
+perryflynn/static-binaries
+
 ## handy-sshd
 
 Already a portable sshd. Download from [releases](https://github.com/nwtgck/handy-sshd/releases)
@@ -36,13 +44,27 @@ Already a portable sshd. Download from [releases](https://github.com/nwtgck/hand
 
 ## htop
 
+perryflynn/static-binaries
+
+## jq
+
+perryflynn/static-binaries
+
 ## NCurses Disk Usage (ncdu)
 
 Use static binary from [official site](https://dev.yorhel.nl/ncdu)
 
 使用[官网](https://dev.yorhel.nl/ncdu)的静态二进制文件
 
+## procps-ng
+
+手动构建。查看[完整教程](./manual-build-static/procps-ng.md)。
+
+All failed: `ldd output/usr/local/bin/*` not passing
+
 ## pv
+
+手动构建。查看[完整教程](./manual-build-static/pv.md)。
 
 ## Tmate
 
@@ -62,5 +84,6 @@ You can find some "portable" (statically linked) binary files, including those n
 
 在以下列表中可以找到一些"便携的"(静态编译的)二进制文件，包括本项目没有的:
 
-- [perryflynn/static-binaries](https://github.com/perryflynn/static-binaries) ([Download](https://files.serverless.industries/bin/)): busybox, curl, dig+nsupdate, htop, iperf2, iperf3, jq, rsync/xxHash, smartctl, OpenSSH, tcpdump/libpcap
+- [perryflynn/static-binaries](https://github.com/perryflynn/static-binaries) ([Download](https://files.serverless.industries/bin/)): busybox, **curl**, dig+nsupdate, **htop**, iperf2, iperf3, **jq**, rsync/xxHash, smartctl, OpenSSH, tcpdump/libpcap
 - [andrew-d/static-binaries](https://github.com/andrew-d/static-binaries): ag (the_silver_searcher), binutils, file, ht, nano, nmap, p0f v3, pv (Pipe Viewer), python, socat, strace, tcpdump, yasm
+- ~~["Static Binaries" project @ serverless.industries](https://serverless.industries/projects.html#static-binaries) ([Download](https://files.serverless.industries/bin/))~~ (Duplicated): busybox, curl, dig, htop, iperf(iperf2), iperf3, jq, nsupdate, rsync, scp, sftp, smartctl, ssh-keygen, ssh, tcpdump
