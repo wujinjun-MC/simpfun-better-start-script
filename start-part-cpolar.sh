@@ -44,6 +44,18 @@ function main_loop() {
 				# 退出内部循环，进入重启逻辑
 				break
 			fi
+
+			# 检查 "restart-<脚本名称>.sh" 文件是否存在，若存在则删除并重载本脚本
+			if [[ -f "restart-start-part-cpolar" ]]; then
+				TIMESTAMP=$(date +"%Y-%m-%d %H:%M:%S")
+				echo "[$TIMESTAMP] 🔁 检测到重启标志文件。正在重载 Cpolar..."
+				# 移除文件，防止下次循环再次触发
+				rm "restart-start-part-cpolar"
+				# 杀死当前监控的进程
+				kill $PID_TO_KILL
+				# 使用 exec 重新执行当前脚本以实现重载（保留参数）
+				exec "$0" "$@"
+			fi
 			# 短暂休眠以避免 CPU 过高
 			sleep 1
 		done
