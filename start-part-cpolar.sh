@@ -11,6 +11,8 @@ CPOLAR_TIMEOUT=${2:-86400}
 CPOLAR=${cpolar:-~/bin/cpolar}
 # cpolar 配置文件位置
 CPOLAR_CONFIG=${cpolar_config:-~/.cpolar/cpolar.yml}
+# cpolar 日志文件位置
+CPOLAR_LOG=${cpolar_log:-~/.cpolar/cpolar.log}
 
 
 # ==========================================================
@@ -24,7 +26,7 @@ function main_loop() {
 		echo "[$TIMESTAMP] 🚀 正在启动 Cpolar，超时时间为 $CPOLAR_TIMEOUT 秒..."
 
 		# 使用 timeout 命令启动进程，并将其放入后台，这样我们就可以获取其 PID
-		timeout -s SIGINT $CPOLAR_TIMEOUT "$CPOLAR" start-all -config "$CPOLAR_CONFIG" &
+		timeout -s SIGINT $CPOLAR_TIMEOUT "$CPOLAR" start-all -config "$CPOLAR_CONFIG" -log "$CPOLAR_LOG" &
 
 		# 获取由 timeout 启动的进程的 PID，这个 PID 是唯一的，不会被其他同名进程混淆
 		PID_TO_KILL=$!

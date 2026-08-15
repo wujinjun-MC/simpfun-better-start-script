@@ -6,7 +6,7 @@ region: cn
 
 log_level: debug
 #log_format: json
-log: /home/container/cpolar.log
+log: /home/container/cpolar.log # 请在 start.sh 配置，此处不生效
 
 # 免费版最多可用4个
 tunnels:

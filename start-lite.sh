@@ -29,6 +29,7 @@ export tmate_retry=5
 #export ???_password=mypassword
 #export ???_key_path=~/.???/akeys
 export cpolar_config=~/.cpolar/cpolar.yml
+export cpolar_log=~/.cpolar/cpolar.log
 export ssld_port=12345
 export ssl_username=wujinjun
 export ssl_password=mypassword
