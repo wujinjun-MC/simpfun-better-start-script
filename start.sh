@@ -388,8 +388,7 @@ elif [ "$remotemode"x = "1"x ]; then
 		fi
 	done
 fi
-elif [ "$remotemode"x = "2"x ]
-then
+elif [ "$remotemode"x = "2"x ]; then
 	echo "[Tmux] 正在启动cpolar_friend_1_ssl"
 	# 构建cpolar_friend_1_ssl命令行参数，自动检测是否需要添加参数
 		# 1. 初始化一个参数数组
