@@ -56,7 +56,7 @@ export minmem=$maxmem
 		### "-XX:MaxMetaspaceSize=384m" 已移除，在插件很多的服务器上会导致大量插件崩溃
 		### "-Xss*" 设置太小会导致 java.lang.StackOverflowError，设置太大则会导致内存浪费。默认设置为 384k
 			#### 如果使用 Geyser 插件，需要设置为 512k (从Geyser版本 2.8.4~2.11.1 某个版本开始，设置为384k会导致Geyser崩溃，并且不会处理(查看: https://github.com/GeyserMC/Geyser/issues/6622))
-export jvm="-server -Xms${minmem}M -Xmx${maxmem}M -XX:+UseG1GC -Xss384k -XX:ReservedCodeCacheSize=256m -XX:MaxDirectMemorySize=128m -XX:+UseStringDeduplication -XX:+PerfDisableSharedMem -XX:+HeapDumpOnOutOfMemoryError -XX:+UnlockExperimentalVMOptions -XX:+DisableExplicitGC -XX:+AlwaysPreTouch -XX:G1ReservePercent=10 -XX:InitiatingHeapOccupancyPercent=15 -XX:G1MixedGCLiveThresholdPercent=85 -XX:G1RSetUpdatingPauseTimePercent=5 -XX:SurvivorRatio=32 -XX:MaxTenuringThreshold=1 -XX:+EnableDynamicAgentLoading -DIKnowThereAreNoNMSBindingsForv1_21_8ButIWillProceedAnyway -Dtechnicjelle.updatechecker.disabled -Dorg.bukkit.plugin.java.LibraryLoader.centralURL=https://maven-central-asia.storage-download.googleapis.com/maven2 -DLeaf.library-download-repo=https://maven.aliyun.com/repository/public -DLeaf.disable-vanilla-profiler -DLeaf.disable-vanilla-debug-feature -Dgale.log.warning.offline.mode" # " -Dpaper.disableGameRuleLimits=true -Dpaper.preferSparkPlugin=true -Dcom.mojang.eula.agree=true -Dpaper.disableChannelLimit -Dpaper.disableMigrationDelay -Dpaper.maxChatCommandInputSize=4096 -javaagent:mods-java-agent/ChunkGuardAgent.jar -Dchunkguard.shadow=true -javaagent:mods-java-agent/LazyContainerAgent.jar -Dlazycontainer.verbose=true -Dlazycontainer.shadow=true -DLeaf.enableFMA"
+export jvm="-server -Xms${minmem}M -Xmx${maxmem}M -XX:+UseG1GC -Xss384k -XX:ReservedCodeCacheSize=256m -XX:MaxDirectMemorySize=128m -XX:+UseStringDeduplication -XX:+PerfDisableSharedMem -XX:+HeapDumpOnOutOfMemoryError -XX:+UnlockExperimentalVMOptions -XX:+DisableExplicitGC -XX:+AlwaysPreTouch -XX:G1ReservePercent=10 -XX:InitiatingHeapOccupancyPercent=15 -XX:G1MixedGCLiveThresholdPercent=85 -XX:G1RSetUpdatingPauseTimePercent=5 -XX:SurvivorRatio=32 -XX:MaxTenuringThreshold=1 -XX:+EnableDynamicAgentLoading -DIKnowThereAreNoNMSBindingsForv1_21_8ButIWillProceedAnyway -Dtechnicjelle.updatechecker.disabled -Dorg.bukkit.plugin.java.LibraryLoader.centralURL=https://maven-central-asia.storage-download.googleapis.com/maven2 -DLeaf.library-download-repo=https://maven.aliyun.com/repository/public -DLeaf.disable-vanilla-profiler -DLeaf.disable-vanilla-debug-feature -Dgale.log.warning.offline.mode -DLeaf.enableFMA" # " -Dpaper.disableGameRuleLimits=true -Dpaper.preferSparkPlugin=true -Dcom.mojang.eula.agree=true -Dpaper.disableChannelLimit -Dpaper.disableMigrationDelay -Dpaper.maxChatCommandInputSize=4096 -javaagent:mods-java-agent/ChunkGuardAgent.jar -Dchunkguard.shadow=true -javaagent:mods-java-agent/LazyContainerAgent.jar -Dlazycontainer.verbose=true -Dlazycontainer.shadow=true"
 	## 其他JVM参数说明:
 		### + "-XX:+EnableDynamicAgentLoading" (Spark修复: Java21不显示错误信息，Java22继续使用高效方式获取性能数据。参见 https://spark.lucko.me/docs/misc/Java-agent-warning)
 		### + "-DIKnowThereAreNoNMSBindingsForv1_21_8ButIWillProceedAnyway" (用于1.21.8强制加载Terra(地形生成器)插件)
@@ -67,6 +67,10 @@ export jvm="-server -Xms${minmem}M -Xmx${maxmem}M -XX:+UseG1GC -Xss384k -XX:Rese
 		### + "-DLeaf.disable-vanilla-profiler" (禁用原版的性能分析器，改善性能，需要分析性能可以使用 Spark 代替)
 		### + "-DLeaf.disable-vanilla-debug-feature" (禁用原版的调试器，改善性能，特别是人数非常多的情况下)
 		### + "-Dgale.log.warning.offline.mode" (禁用离线模式提醒)
+		### + "-DLeaf.enableFMA" (使用 [Fused-Multiply-Add operations](https://en.wikipedia.org/wiki/Multiply%E2%80%93accumulate_operation) 加速数学计算)
+			#### 需要CPU支持FMA指令集，否则会降低速度
+			#### 在终端内 (Linux shell, 不是Minecraft命令窗口) 执行命令 `grep -m 1 -E "(fma|fma4)" /proc/cpuinfo` ，如果显示则支持FMA指令集
+			#### 简幻欢的AMD CPU实例一般都支持，Intel自测
 		### + "-Dpaper.disableGameRuleLimits=true" (关闭gamerule检查(比如矿车最大速度限制)，用于乐趣服务器。默认禁用)
 		### + "-Dpaper.preferSparkPlugin=true" (使用外置 & 关闭内置Spark插件。默认禁用)
 		### + "-Dcom.mojang.eula.agree=true" (同意EULA，忽略eula.txt。默认禁用)
@@ -77,7 +81,6 @@ export jvm="-server -Xms${minmem}M -Xmx${maxmem}M -XX:+UseG1GC -Xss384k -XX:Rese
 			#### + "-Dchunkguard.shadow=true" ("dry-run" 模式)
 		### + "-javaagent:mods-java-agent/LazyContainerAgent.jar -Dlazycontainer.verbose=true" (启用 Java Agent mod "LazyContainerAgent"，详见 `mods-java-agent/README.md`。默认禁用)
 			#### + "-Dlazycontainer.shadow=true" ("dry-run" 模式)
-		### + "-DLeaf.enableFMA" (使用 [Fused-Multiply-Add operations](https://en.wikipedia.org/wiki/Multiply%E2%80%93accumulate_operation) 加速数学计算，需要CPU支持FMA指令集，否则会降低速度。默认禁用)
 	## 寻找其他JVM参数
 		### https://docs.papermc.io/paper/reference/system-properties/
 		### https://www.leafmc.one/en/docs/config/jvm-flags
