@@ -10,8 +10,7 @@ if [ "$BASH_VERSION"x = ""x ]; then
 fi
 # 用户须知
 export show_start_message_and_exit=1
-if [ "$show_start_message_and_exit"x = "1"x ]
-then
+if [ "$show_start_message_and_exit"x = "1"x ]; then
 	echo "欢迎使用 更好的简幻欢启动脚本 ，作者 wujinjun-MC (https://github.com/wujinjun-MC)"
 	echo "Copyright © 2026 wujinjun-MC, released under GPL 3.0."
 	echo "在开始使用前，请使用编辑器打开start.sh，在下方配置区中进行配置"
@@ -171,14 +170,12 @@ if [ "$remotemode"x = "1"x ] || [ "$remotemode"x = "2"x ]; then
 	bash ~/scripts/autotask_hour0_auto_sleep-tmux.sh &
 fi
 
-if [ "$remotemode"x = "-1"x ]
-then
+if [ "$remotemode"x = "-1"x ]; then
 	TERM=xterm-256color bash ~/start-part-mcserver.sh $$
 	while true ; do sleep 999999 ; done
 fi
 
-if [ "$remotemode"x = "0"x ]
-then
+if [ "$remotemode"x = "0"x ]; then
 	echo "[Tmate]正在启动容器Shell"
 	numTmateTrials=1 # 重试次数计数器
 	fail1=0
@@ -186,10 +183,8 @@ then
 	tmate_sock_system=~/tmp/tmate-system_shell.sock
 	tmate_sock_MCconsole=~/tmp/tmate-minecraft_console.sock
 	"$tmate" -S "$tmate_sock_system" new-session -P -d
-	while ! "$tmate" -S "$tmate_sock_system" wait tmate-ready # 等待到Tmate连接建立。返回非0代表连接建立失败
-	do
-		if [ "$numTmateTrials" -ge "$tmate_retry" ]
-		then
+	while ! "$tmate" -S "$tmate_sock_system" wait tmate-ready; do # 等待到Tmate连接建立。返回非0代表连接建立失败
+		if [ "$numTmateTrials" -ge "$tmate_retry" ]; then
 			echo "[Tmate]启动容器Shell失败, 已跳过"
 			fail1=1
 			break
@@ -199,8 +194,7 @@ then
 		sleep 1
 		"$tmate" -S "$tmate_sock_system" new-session -P -d
 	done
-	if [ "$fail1"x = "0"x ]
-	then
+	if [ "$fail1"x = "0"x ]; then
 		echo "[Tmate]容器Shell启动成功"
 		"$tmate" -S "$tmate_sock_system" send-key q
 		echo -n "SSH命令"
@@ -216,10 +210,8 @@ then
 	numTmateTrials=1 # 重试次数计数器
 	fail2=0
 	"$tmate" -S "$tmate_sock_MCconsole" new-session -d bash start-part-mcserver.sh $$
-	while ! "$tmate" -S "$tmate_sock_MCconsole" wait tmate-ready # 等待到Tmate连接建立。返回非0代表连接建立失败
-	do
-		if [ "$numTmateTrials" -ge "$tmate_retry" ]
-		then
+	while ! "$tmate" -S "$tmate_sock_MCconsole" wait tmate-ready; do # 等待到Tmate连接建立。返回非0代表连接建立失败
+		if [ "$numTmateTrials" -ge "$tmate_retry" ]; then
 			echo "[Tmate]启动服务器Shell失败, 已跳过"
 			fail2=1
 			break
@@ -229,8 +221,7 @@ then
 		sleep 1
 		"$tmate" -S "$tmate_sock_MCconsole" new-session -d 'TERM=xterm-256color bash ~/start-part-mcserver.sh'" $$"' ; bash -l'
 	done
-	if [ "$fail2"x = "0"x ]
-	then
+	if [ "$fail2"x = "0"x ]; then
 		echo "[Tmate]服务器Shell启动成功"
 		"$tmate" -S "$tmate_sock_MCconsole" send-key q
 		echo -n "SSH命令"
@@ -247,10 +238,8 @@ then
 	trap exit_actions INT
 	# echo "[$(date +%H:%M:%S)] [Server thread/INFO]: Done (${done_duration}.00s)! For help, type \"help\""
 	echo "正在监听 latest.log 判断服务器何时启动成功"
-	tail -F ~/logs/latest.log | while IFS= read -r line
-	do
-		if [[ "$line" == *"For help, type \"help\""* ]]
-		then
+	tail -F ~/logs/latest.log | while IFS= read -r line; do
+		if [[ "$line" == *"For help, type \"help\""* ]]; then
 			done_timestamp=$(date +%s)
 			done_duration=$(( done_timestamp - start_timestamp ))
 			echo "$line"
@@ -259,30 +248,25 @@ then
 		fi
 	done
 	echo "现在开始, 可以在此控制台输入\"help\"获取帮助"
-	while true
-	do
+	while true; do
 		read -p "> " REPLY
-		if [ "$REPLY"x = "stop"x ]
-		then
+		if [ "$REPLY"x = "stop"x ]; then
 			"$tmate" -S "$tmate_sock_MCconsole" send-keys "minecraft:stop"
 			"$tmate" -S "$tmate_sock_MCconsole" send-keys Enter
 			touch "$fileCheckIfShutdownFromConsole"
 			echo 正在停止服务器
 			"$tmate" -S "$tmate_sock_MCconsole" attach-session
 			break
-		elif [ "$REPLY"x = "attach"x ]
-		then
+		elif [ "$REPLY"x = "attach"x ]; then
 			echo attach
 			"$tmate" -S "$tmate_sock_MCconsole" attach-session
 			break
 		# Linux控制台命令。其中使用的eval可能会导致危险行为，所以此功能默认禁用
-		# elif [ "$REPLY"x = "linuxcmd"x ]
-		# then
+		# elif [ "$REPLY"x = "linuxcmd"x ]; then
 		# 	read -e -p "请输入Linux控制台命令: " linuxcommand
 		# 	eval $linuxcommand
 		# 	break
-		elif [ "$REPLY"x = "help"x ]
-		then
+		elif [ "$REPLY"x = "help"x ]; then
 			echo "stop: 停止MC服务器"
 			echo "attach: 进入MC控制台(此操作无法撤销)"
 			echo "linuxcmd: 在此处执行Linux控制台命令(有安全隐患，如需启用请取消注释部分脚本内容)。不建议执行会花费较长时间的命令，否则可能会无法切出"
@@ -291,8 +275,7 @@ then
 			echo "未知命令: ${REPLY} 。输入 \"help\" 查看帮助"
 		fi
 	done
-elif [ "$remotemode"x = "1"x ]
-then
+elif [ "$remotemode"x = "1"x ]; then
 	echo "[Tmux] 正在启动Handy-sshd"
 	# 构建handy-sshd命令行参数，自动检测是否需要添加参数
 		# 1. 初始化一个参数数组
@@ -366,10 +349,8 @@ then
 	echo "---"
 	echo "正在监听 \"latest.log\" 文件，判断服务器何时启动成功..."
 	trap exit_actions INT
-	tail -F ~/logs/latest.log | while IFS= read -r line
-	do
-		if [[ "$line" == *"For help, type \"help\""* ]]
-		then
+	tail -F ~/logs/latest.log | while IFS= read -r line; do
+		if [[ "$line" == *"For help, type \"help\""* ]]; then
 			done_timestamp=$(date +%s)
 			done_duration=$(( done_timestamp - start_timestamp ))
 			echo "$line"
@@ -378,11 +359,9 @@ then
 		fi
 	done
 	echo "现在开始, 可以在此控制台输入\"help\"获取帮助"
-	while true
-	do
+	while true; do
 		read -p "> " REPLY
-		if [ "$REPLY"x = "stop"x ]
-		then
+		if [ "$REPLY"x = "stop"x ]; then
 			echo 正在停止服务器
 			sleep 1
 			"$tmux" send-keys -t mcserver_console "minecraft:stop"
@@ -390,19 +369,16 @@ then
 			touch "$fileCheckIfShutdownFromConsole"
 			"$tmux" attach -t mcserver_console
 			break
-		elif [ "$REPLY"x = "attach"x ]
-		then
+		elif [ "$REPLY"x = "attach"x ]; then
 			echo attach
 			"$tmux" attach -t mcserver_console
 			break
 		# Linux控制台命令。其中使用的eval可能会导致危险行为，所以此功能默认禁用
-		# elif [ "$REPLY"x = "linuxcmd"x ]
-		# then
+		# elif [ "$REPLY"x = "linuxcmd"x ]; then
 		# 	read -e -p "请输入Linux控制台命令: " linuxcommand
 		# 	eval $linuxcommand
 		# 	break
-		elif [ "$REPLY"x = "help"x ]
-		then
+		elif [ "$REPLY"x = "help"x ]; then
 			echo "stop: 停止MC服务器"
 			echo "attach: 进入MC控制台(此操作无法撤销)"
 			echo "linuxcmd: 在此处执行Linux控制台命令(有安全隐患，如需启用请取消注释部分脚本内容)。不建议执行会花费较长时间的命令，否则可能会无法切出"
@@ -499,10 +475,8 @@ then
 	echo "---"
 	echo "正在监听 \"latest.log\" 文件，判断服务器何时启动成功..."
 	trap exit_actions INT
-	tail -F ~/logs/latest.log | while IFS= read -r line
-	do
-		if [[ "$line" == *"For help, type \"help\""* ]]
-		then
+	tail -F ~/logs/latest.log | while IFS= read -r line; do
+		if [[ "$line" == *"For help, type \"help\""* ]]; then
 			done_timestamp=$(date +%s)
 			done_duration=$(( done_timestamp - start_timestamp ))
 			echo "$line"
@@ -511,11 +485,9 @@ then
 		fi
 	done
 	echo "现在开始, 可以在此控制台输入\"help\"获取帮助"
-	while true
-	do
+	while true; do
 		read -p "> " REPLY
-		if [ "$REPLY"x = "stop"x ]
-		then
+		if [ "$REPLY"x = "stop"x ]; then
 			echo 正在停止服务器
 			sleep 1
 			"$tmux" send-keys -t mcserver_console "minecraft:stop"
@@ -523,8 +495,7 @@ then
 			touch "$fileCheckIfShutdownFromConsole"
 			"$tmux" attach -t mcserver_console
 			break
-		elif [ "$REPLY"x = "attach"x ]
-		then
+		elif [ "$REPLY"x = "attach"x ]; then
 			echo attach
 			"$tmux" attach -t mcserver_console
 			break
@@ -534,8 +505,7 @@ then
 		# 	read -e -p "请输入Linux控制台命令: " linuxcommand
 		# 	eval $linuxcommand
 		# 	break
-		elif [ "$REPLY"x = "help"x ]
-		then
+		elif [ "$REPLY"x = "help"x ]; then
 			echo "stop: 停止MC服务器"
 			echo "attach: 进入MC控制台(此操作无法撤销)"
 			echo "linuxcmd: 在此处执行Linux控制台命令(有安全隐患，如需启用请取消注释部分脚本内容)。不建议执行会花费较长时间的命令，否则可能会无法切出"
