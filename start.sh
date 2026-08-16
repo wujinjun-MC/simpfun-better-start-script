@@ -421,7 +421,7 @@ elif [ "$remotemode"x = "2"x ]; then
 	echo "---"
 
 	echo "[Tmux] 正在启动cpolar"
-	"$tmux" new-session -ds cpolar "bash ~/start-part-cpolar.sh 2>&1 | tee cpolar-log.txt`
+	"$tmux" new-session -ds cpolar "bash ~/start-part-cpolar.sh 2>&1 | tee cpolar-log.txt"
 
 	echo "---"
 	echo "✅ Cpolar服务已启动"
