@@ -38,9 +38,9 @@ perryflynn/static-binaries
 
 ## handy-sshd
 
-Already a portable sshd. Download from [releases](https://github.com/nwtgck/handy-sshd/releases)
+Already a portable sshd. However original work doesn't support "authorized keys" so I forked and merged codes from a [pull request](https://github.com/nwtgck/handy-sshd/pull/34). Also created a [new branch](https://github.com/wujinjun-MC/handy-sshd/tree/fun-remove-string) to censor texts to protect users. Pick this [workflow build](https://github.com/wujinjun-MC/handy-sshd/actions/runs/32039217202)
 
-已经是便携sshd。从[releases](https://github.com/nwtgck/handy-sshd/releases)下载
+已经是便携sshd。但是原版不支持 "authorized keys" 功能，所以我创建分支，从[pull request](https://github.com/nwtgck/handy-sshd/pull/34)合并了相关代码。还创建了[新分支](https://github.com/wujinjun-MC/handy-sshd/tree/fun-remove-string)，过滤文字以保护用户。选择这一个[workflow build](https://github.com/wujinjun-MC/handy-sshd/actions/runs/32039217202)
 
 ## htop
 
