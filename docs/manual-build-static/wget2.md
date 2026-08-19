@@ -63,7 +63,7 @@
     RUN export FORCE_UNSAFE_CONFIGURE=1 && \
         ./configure \
         CFLAGS="-O2 -static" \
-        LDFLAGS="-static -all-static" \
+        LDFLAGS="-static" \
         --disable-shared \
         --enable-static \
         --disable-nls \
