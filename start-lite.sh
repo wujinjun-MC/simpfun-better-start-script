@@ -18,8 +18,8 @@ chmod -R +x ~/start-part-*.sh
 chmod -R +x ~/.tmux.switch-client.sh
 chmod -R +x ~/scripts/*.sh
 export PATH=$PATH:$HOME/bin:$HOME/bin/coreutils
-export allocate_perfcent=80
-export maxmem=$(echo "$SERVER_MEMORY*$allocate_perfcent/100" | busybox bc)
+export allocate_percent=80
+export maxmem=$(echo "$SERVER_MEMORY*$allocate_percent/100" | busybox bc)
 export minmem=$maxmem
 export jvm="-server -Xms${minmem}M -Xmx${maxmem}M -XX:+UseG1GC -Xss512k -XX:ReservedCodeCacheSize=256m -XX:MaxDirectMemorySize=128m -XX:+UseStringDeduplication -XX:+PerfDisableSharedMem -XX:+HeapDumpOnOutOfMemoryError -XX:+UnlockExperimentalVMOptions -XX:+DisableExplicitGC -XX:+AlwaysPreTouch -XX:G1ReservePercent=10 -XX:InitiatingHeapOccupancyPercent=15 -XX:G1MixedGCLiveThresholdPercent=85 -XX:G1RSetUpdatingPauseTimePercent=5 -XX:SurvivorRatio=32 -XX:MaxTenuringThreshold=1 -XX:+EnableDynamicAgentLoading -DIKnowThereAreNoNMSBindingsForv1_21_8ButIWillProceedAnyway -Dtechnicjelle.updatechecker.disabled -Dorg.bukkit.plugin.java.LibraryLoader.centralURL=https://maven-central-asia.storage-download.googleapis.com/maven2 -DLeaf.library-download-repo=https://maven.aliyun.com/repository/public -DLeaf.disable-vanilla-profiler -DLeaf.disable-vanilla-debug-feature -Dgale.log.warning.offline.mode=false -Dgale.log.warning.root=false -DLeaf.enableFMA" # " -Dpaper.disableGameRuleLimits=true -Dpaper.preferSparkPlugin=true -Dcom.mojang.eula.agree=true -Dpaper.disableChannelLimit -Dpaper.disableMigrationDelay -Dpaper.maxChatCommandInputSize=4096 -javaagent:mods-java-agent/ChunkGuardAgent.jar -Dchunkguard.shadow=true -javaagent:mods-java-agent/LazyContainerAgent.jar -Dlazycontainer.verbose=true -Dlazycontainer.shadow=true -javaagent:plugins/farlandsorigin.jar"
 # 0 tmate 1 ???? 2 Handy-???d + Cpolar 3 Telnet [!TODO]

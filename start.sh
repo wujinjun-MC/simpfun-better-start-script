@@ -43,8 +43,8 @@ export PATH=$PATH:$HOME/bin:$HOME/bin/coreutils
 	## (Deprecated)服务器JVM的最大(-Xmx)和预占用(-Xms)内存, 建议最大设置为容器限制-1500, 预占用内存设置为最大的一半
 		### export maxmem=$((${SERVER_MEMORY} - 1500))
 		### export minmem=$((${maxmem} / 2))
-export allocate_perfcent=80
-export maxmem=$(echo "$SERVER_MEMORY*$allocate_perfcent/100" | busybox bc)
+export allocate_percent=80
+export maxmem=$(echo "$SERVER_MEMORY*$allocate_percent/100" | busybox bc)
 export minmem=$maxmem
 # Java设置
 	## 不能与 内存设置 交换顺序，因为JVM参数中使用了其中的变量，交换后因值为空而出错
