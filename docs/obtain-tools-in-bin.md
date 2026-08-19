@@ -82,6 +82,12 @@ Use static binary from [releases](https://github.com/pythops/tmux-linux-binary/r
 
 使用[releases](https://github.com/pythops/tmux-linux-binary/releases)的静态二进制文件 (由[pythops/tmux-linux-binary](https://github.com/pythops/tmux-linux-binary)构建)
 
+## wget2
+
+手动构建。查看[完整教程](./manual-build-static/wget2.md)。
+
+All failed: `ldd output/usr/local/bin/*` not passing
+
 ## Other sources
 
 You can find some "portable" (statically linked) binary files, including those not included in this project:
