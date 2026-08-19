@@ -62,7 +62,7 @@
     # 配置并进行静态编译
     RUN export FORCE_UNSAFE_CONFIGURE=1 && \
         ./configure \
-        CFLAGS="-O2 -static" \
+        CFLAGS="-O2 -static -static-libgcc" \
         LDFLAGS="-static" \
         --disable-shared \
         --enable-static \
