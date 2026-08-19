@@ -10,7 +10,9 @@ Java Agent mods 放这里
         - `-javaagent:ChunkGuardAgent.jar`: 加载这个 Java Agent
         - `-Dchunkguard.shadow=true`: "dry-run" 模式 (只記錄、不攔截,伺服器行為與沒裝時 100% 相同,建議先跑幾天)
             - 試跑判讀:log 出現 `SHADOW would-skip` = 它抓到一次毀損寫入(正式模式下會被擋);關機時 `inspectErrors=0`、平常存檔無異狀 → 可安心轉正式。
+    - 把文件名中的版本号去掉(JVM参数中引用的文件没有版本号)
     - License=none(ARR?)
+    - 未包含在本项目，需要手动下载放到 `mods-java-agent/`
 2. [LazyContainerAgent](https://github.com/kuohsuanlo/LazyContainerAgent):
     - "箱子物品「延遲反序列化(不急著把資料拆解成遊戲內物件,拖到真的要用才拆)+ 沒碰過就原樣寫回」的 Java agent。 針對 Paper 26.2,把 chunk(遊戲世界切成一塊一塊的地圖區域,伺服器以此為單位載入/卸載)載入時「立刻把每個箱子的物品從 NBT(Minecraft 儲存物品/方塊資料的二進位格式)解包」與卸載時「重新打包」這兩筆白工砍掉。" (区块加载时，不要立即解析箱子内的NBT/组件，需要使用时才解析，改善在多箱子场景下的性能)
     - 查看介绍视频: [我的老天 ... Minecraft「讀取一個方塊」呼叫了200層函數 ...](https://www.youtube.com/watch?v=eZEZo0sE1L4)
@@ -19,3 +21,20 @@ Java Agent mods 放这里
         - `-javaagent:LazyContainerAgent.jar`: 加载这个 Java Agent
         - `-Dlazycontainer.shadow=true`: "dry-run" 模式 (**先驗證,別急著上真效能** —— 開著 `shadow=true` 跑個幾天。它會把優化後的輸出跟原版做法**逐位元組對照**:只要 `shadowMismatch` 一直是 0,就代表輸出跟原版完全一致、**資料零風險**。代價是這階段兩套都做、暫時不會變快。)
             - **確認沒問題,再換真效能** —— 跑數天 `shadowMismatch=0`、也沒玩家回報少東西,就拿掉、重啟。這時「沒人碰過的箱子」會直接原樣寫回(跳過打包),效能才真正省下來。
+    - License=none(ARR?)
+    - 未包含在本项目，需要手动下载放到 `mods-java-agent/`
+3. [FarlandsOrigin](https://hangar.papermc.io/xeaf/FarlandsOrigin):
+    - "Folia/Paper port of [ClassicFarlands](https://modrinth.com/mod/classic-farlands) to restore the farlands on modern servers" 将[ClassicFarlands](https://modrinth.com/mod/classic-farlands) (mod) 移植到 Folia/Paper 插件服
+    - 在主世界 (包括 放大化、巨型生物群系 预设) 生成类似于 Beta1.7.3 的边境之地
+    - 需要同时作为 Java Agent 和插件加载，放入 `plugins/`
+    - 自动生成数据包到 `<level-name>/datapacks/farlandsorigin` ，每次Minecraft版本升级时需要删除重新生成
+    - 下载:
+        - https://hangar.papermc.io/xeaf/FarlandsOrigin/versions
+        - https://github.com/0xEAF/FarlandsOrigin/releases
+    - 需要添加JVM参数: `-javaagent:farlandsorigin.jar`
+        - `-javaagent:farlandsorigin.jar`: 加载这个 Java Agent
+    - 把文件名中的版本号去掉(JVM参数中引用的文件没有版本号)
+    - 如果不再使用此mod，需要同时删除相关JVM参数、插件和数据包
+    - License=[MIT](https://github.com/0xEAF/FarlandsOrigin/blob/main/LICENSE)
+    - [Github](https://github.com/0xEAF/FarlandsOrigin)
+    - 未包含在本项目，需要手动下载放到 `plugins/`
