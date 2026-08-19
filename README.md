@@ -14,6 +14,7 @@ ACTIVE NOW!!! STAR!!! FORK!!!
 6. 可通过Tailscale (即将到来) 远程调试，避免直接暴露端口，减小攻击面
 7. **(NOT VIOLATING TOS)** 方便多管理员情况下的团队协作，例如排除故障、动态测试JVM参数性能
 	- 必须使用...方法获得IP白名单后才能登录到网页控制台，但""启动速度慢，包含开屏广告(跳过按钮屏占比仅<2%)，严重影响用户体验; 多管理员环境下，效率更低，需要使用屏幕共享等方式控制，产生严重安全漏洞 (获得完整手机/电脑操控权限，服主面临财产、隐私安全威胁)
+8. 支持直接在服务端下载文件 (通过curl等工具) ，实测下载 Modrinth 等来源的速度更快。如果你的宽带正在被"卡脖子" (例如运营商单方面违反合同限制上传速度) ，可以用此方法"绕过"反作弊，无需忍受低速文件上传
 
 更多功能查看 [Features](#features)
 
@@ -37,9 +38,10 @@ ACTIVE NOW!!! STAR!!! FORK!!!
 	1. btop和htop: 性能监视器
 	2. handy-sshd: SSH
 	<!-- 3. dropbear*, dbclient: SSH服务端(及工具)、SSH客户端 -- 无法解决容器只读带来的问题，所以无法添加-->
-	4. busybox: 基础功能
+	4. busybox和coreutils: 基础功能
 	5. tmate和tmux: 终端工具
 	6. ncdu: 存储空间占用分析
+	... (更多工具可查看 [bin](./bin/) 文件夹)
 - 支持 Java Agent mod，实现Bukkit/Spigot/Paper插件无法实现的修改
 	- Example:
 		- [ChunkGuardAgent](https://github.com/kuohsuanlo/ChunkGuardAgent)
@@ -92,6 +94,8 @@ ACTIVE NOW!!! STAR!!! FORK!!!
 - [x] [Docs]完善 `scripts` 说明
 - [ ] [Security](Github actions)一键"obfuscator" (可使用[Bashfuscator](https://github.com/bashfuscator/bashfuscator)等工具暂时代替)
 - [x] [Security]添加 [Cpolar](https://www.cpolar.com/) (非frp) 支持，使用tunnel避免直接暴露端口，减小攻击面
+- [ ] [README/docs/comments]i18n
+	- English
 
 ## Copyright & License
 
