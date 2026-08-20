@@ -1,7 +1,5 @@
 # 更好的简幻欢启动脚本 (强大的工具箱) <a href="https://github.com/wujinjun-MC/simpfun-better-start-script?tab=GPL-3.0-1-ov-file"> <img alt="GNU GPLv3" src="https://www.gnu.org.cach3.com/graphics/gplv3-127x51.png"> </a>
 
----
-
 简幻欢启动脚本QoL。从start.sh到多种多样的工具，支持自动重启、终端管理、性能优化、存档保护等功能，方便服主高效管理服务器。
 
 ACTIVE NOW!!! STAR!!! FORK!!!
