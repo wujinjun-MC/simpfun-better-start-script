@@ -125,7 +125,7 @@ then
 			break
 		fi
 	done
-	echo "现在开始, 可以在此控制台输入\"help\"获取帮助"
+	echo "服务器启动成功, 已进入 \"pseudo\" 控制台, 输入\"help\"获取帮助"
 	while true; do
 		read -p "> " REPLY
 		if [ "$REPLY"x = "stop"x ]; then
@@ -231,7 +231,7 @@ elif [ "$remotemode"x = "2"x ]; then
 			break
 		fi
 	done
-	echo "现在开始, 可以在此控制台输入\"help\"获取帮助"
+	echo "服务器启动成功, 已进入 \"pseudo\" 控制台, 输入\"help\"获取帮助"
 	while true; do
 		read -p "> " REPLY
 		if [ "$REPLY"x = "stop"x ]; then
