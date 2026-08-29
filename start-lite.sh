@@ -7,7 +7,9 @@ if [ "$BASH_VERSION"x = ""x ]; then
 fi
 export show_start_message_and_exit=1
 if [ "$show_start_message_and_exit"x = "1"x ]; then
-	echo "欢迎使用...lite ，作者?"
+	echo "欢迎使用...lite ，作者...(↓)"
+	echo "Copyright © 2026 wujinjun-MC, released under GPL 3.0."
+	echo "Please accept ToS of this script. You can find it in the full version!"
 	exit
 fi
 export start_timestamp=$(date +%s)
