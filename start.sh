@@ -150,6 +150,9 @@ export fileCheckIfAutoTaskHour0AutoSleep=~/hour0-auto-sleep
 		### uname -a
 	## 关服时，是否清除垃圾，避免因超出磁盘空间而扣积分(默认关闭)
 		### 在 ~/scripts/cache-cleanup.sh 进行配置
+# 安全设置
+	## 在 "pseudo" 控制台下进入MC控制台 (Tmux/Tmate attach) 后，如果退出 (detach) ，是否询问真的要关闭服务器
+export tmux_tmate_attach_safe_exit=1
 # 自动任务
 	## 是否启用 0点自动关服并等待 - 在0点时关闭服务器，等待一定时间(默认3600秒/60分钟)再开服，用于防止服务器损坏，因为如果积分不足，实例在此时会被强制停止。
 		### 暂时仅支持 remotemode=1,2
@@ -267,7 +270,15 @@ if [ "$remotemode"x = "0"x ]; then
 		elif [ "$REPLY"x = "attach"x ]; then
 			echo attach
 			"$tmate" -S "$tmate_sock_MCconsole" attach-session
-			break
+			if [ "$tmux_tmate_attach_safe_exit"x = "1"x ]; then
+				echo "[WARN] 你之前已经进入MC控制台，但现在被退出，可能因为 tmux/tmate 停止，或MC服务器停止。"
+				read -p "输入\"stop\"立即退出 \"pseudo\" 控制台，完全关闭服务器；输入其他则回到 \"pseudo\" 控制台: " REPLY
+				if [ "$REPLY"x = "stop"x ]; then
+					break
+				fi
+			else
+				break
+			fi
 		# Linux控制台命令。其中使用的eval可能会导致危险行为，所以此功能默认禁用
 		# elif [ "$REPLY"x = "linuxcmd"x ]; then
 		# 	read -e -p "请输入Linux控制台命令: " linuxcommand
@@ -379,7 +390,15 @@ elif [ "$remotemode"x = "1"x ]; then
 		elif [ "$REPLY"x = "attach"x ]; then
 			echo attach
 			"$tmux" attach -t mcserver_console
-			break
+			if [ "$tmux_tmate_attach_safe_exit"x = "1"x ]; then
+				echo "[WARN] 你之前已经进入MC控制台，但现在被退出，可能因为 tmux/tmate 停止，或MC服务器停止。"
+				read -p "输入\"stop\"立即退出 \"pseudo\" 控制台，完全关闭服务器；输入其他则回到 \"pseudo\" 控制台: " REPLY
+				if [ "$REPLY"x = "stop"x ]; then
+					break
+				fi
+			else
+				break
+			fi
 		# Linux控制台命令。其中使用的eval可能会导致危险行为，所以此功能默认禁用
 		# elif [ "$REPLY"x = "linuxcmd"x ]; then
 		# 	read -e -p "请输入Linux控制台命令: " linuxcommand
@@ -504,7 +523,15 @@ elif [ "$remotemode"x = "2"x ]; then
 		elif [ "$REPLY"x = "attach"x ]; then
 			echo attach
 			"$tmux" attach -t mcserver_console
-			break
+			if [ "$tmux_tmate_attach_safe_exit"x = "1"x ]; then
+				echo "[WARN] 你之前已经进入MC控制台，但现在被退出，可能因为 tmux/tmate 停止，或MC服务器停止。"
+				read -p "输入\"stop\"立即退出 \"pseudo\" 控制台，完全关闭服务器；输入其他则回到 \"pseudo\" 控制台: " REPLY
+				if [ "$REPLY"x = "stop"x ]; then
+					break
+				fi
+			else
+				break
+			fi
 		# Linux控制台命令。其中使用的eval可能会导致危险行为，所以此功能默认禁用
 		# elif [ "$REPLY"x = "linuxcmd"x ]
 		# then

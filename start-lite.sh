@@ -43,6 +43,7 @@ export tmux=~/bin/tmux
 export cpolar=~/bin/cpolar
 export fileCheckIfShutdownFromConsole=~/shutdown-mc-server
 export fileCheckIfAutoTaskHour0AutoSleep=~/hour0-auto-sleep
+export tmux_tmate_attach_safe_exit=1
 export autotask_hour0_auto_sleep=1
 exit_actions()
 {
@@ -138,7 +139,15 @@ then
 		elif [ "$REPLY"x = "attach"x ]; then
 			echo attach
 			"$tmate" -S "$tmate_sock_MCconsole" attach-session
-			break
+			if [ "$tmux_tmate_attach_safe_exit"x = "1"x ]; then
+				echo "[WARN] 你之前已经进入MC控制台，但现在被退出，可能因为 tmux/tmate 停止，或MC服务器停止。"
+				read -p "输入\"stop\"立即退出 \"pseudo\" 控制台，完全关闭服务器；输入其他则回到 \"pseudo\" 控制台: " REPLY
+				if [ "$REPLY"x = "stop"x ]; then
+					break
+				fi
+			else
+				break
+			fi
 		# Linux控制台命令。其中使用的eval可能会导致危险行为，所以此功能默认禁用
 		# elif [ "$REPLY"x = "linuxcmd"x ]; then
 		# 	read -e -p "请输入Linux控制台命令: " linuxcommand
@@ -245,7 +254,15 @@ elif [ "$remotemode"x = "2"x ]; then
 		elif [ "$REPLY"x = "attach"x ]; then
 			echo attach
 			"$tmux" attach -t mcserver_console
-			break
+			if [ "$tmux_tmate_attach_safe_exit"x = "1"x ]; then
+				echo "[WARN] 你之前已经进入MC控制台，但现在被退出，可能因为 tmux/tmate 停止，或MC服务器停止。"
+				read -p "输入\"stop\"立即退出 \"pseudo\" 控制台，完全关闭服务器；输入其他则回到 \"pseudo\" 控制台: " REPLY
+				if [ "$REPLY"x = "stop"x ]; then
+					break
+				fi
+			else
+				break
+			fi
 		# Linux控制台命令。其中使用的eval可能会导致危险行为，所以此功能默认禁用
 		# elif [ "$REPLY"x = "linuxcmd"x ]
 		# then
