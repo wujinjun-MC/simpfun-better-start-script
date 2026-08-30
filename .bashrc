@@ -7,7 +7,7 @@ then
 fi
 
 # 优化Bash历史记录
-export PROMPT_COMMAND="history -a; $PROMPT_COMMAND"
+export PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND;}history -a"
 export HISTSIZE=100000
 export HISTFILESIZE=1000000
 #export HISTCONTROL=ignoredups:ignorespace
