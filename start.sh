@@ -140,6 +140,8 @@ export tmate=~/bin/tmate
 export tmux=~/bin/tmux
 	## 指定cpolar二进制文件的路径
 export cpolar=~/bin/cpolar
+	## 指定choom二进制文件的路径
+export choom=/usr/bin/choom
 	## 指定关服标志文件, 用于判断是否停止服务器
 export fileCheckIfShutdownFromConsole=~/shutdown-mc-server
 	## 指定"自动休眠"标志文件，判断是否为 自动任务-0点自动关服并等待

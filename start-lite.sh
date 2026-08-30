@@ -41,6 +41,7 @@ export server_jar="server-release.jar"
 export tmate=~/bin/tmate
 export tmux=~/bin/tmux
 export cpolar=~/bin/cpolar
+export choom=/usr/bin/choom
 export fileCheckIfShutdownFromConsole=~/shutdown-mc-server
 export fileCheckIfAutoTaskHour0AutoSleep=~/hour0-auto-sleep
 export tmux_tmate_attach_safe_exit=1
