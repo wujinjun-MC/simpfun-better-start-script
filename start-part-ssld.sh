@@ -46,7 +46,7 @@ function main_loop() {
 			# 检查 "restart-<脚本名称>.sh" 文件是否存在，若存在则删除并重载本脚本
 			if [[ -f "restart-start-part-ssld" ]]; then
 				TIMESTAMP=$(date +"%Y-%m-%d %H:%M:%S")
-				echo "[$TIMESTAMP] 🔁 检测到重启标志文件。正在重载 $HANDY_SSLD_COMMAND..."
+				echo "[$TIMESTAMP] 🔁 检测到重启标志文件。正在重载此脚本..."
 				# 移除文件，防止下次循环再次触发
 				rm "restart-start-part-ssld"
 				# 杀死当前监控的进程
